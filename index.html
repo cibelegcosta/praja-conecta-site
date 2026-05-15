@@ -1,0 +1,3533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praja Conecta · Automação que você entende</title>
+<meta name="description" content="Squad de 3 sócias-operadoras que mapeia processos, identifica melhorias e implementa automações para PMEs. Especialistas em ERP de gestão. Do Rio de Janeiro pro Brasil.">
+<meta property="og:title" content="Praja Conecta · Automação que você entende">
+<meta property="og:description" content="3 sócias-operadoras. Financeiro, UX e Fiscal. Automação que você entende e controla.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
+
+<style>
+/* ════════════════════════════════════════════════════
+   PRAJA CONECTA - Single-page boutique premium
+   Paleta: navy #0A1A24 · cyan #7BBFFF · mint #5FD9B0
+   Tipo: Space Grotesk (display) · Inter (body) · JetBrains Mono (mono)
+   ════════════════════════════════════════════════════ */
+
+:root {
+  --bg-0: #07111A;
+  --bg-1: #0A1A24;
+  --bg-2: #0F2433;
+  --bg-3: #142D3F;
+
+  --ink-0: #FFFFFF;
+  --ink-1: #E8EDF2;
+  --ink-2: #B8C5D3;
+  --ink-3: #6B7A8C;
+  --ink-4: #3F4D5C;
+
+  --cyan: #7BBFFF;
+  --cyan-d: #5599DD;
+  --mint: #5FD9B0;
+  --mint-d: #3FB890;
+  --rose: #F472B6;
+  --amber: #FFD166;
+
+  --line: rgba(123, 191, 255, 0.12);
+  --line-2: rgba(123, 191, 255, 0.22);
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 16px;
+
+  --t-1: cubic-bezier(.2,.7,.3,1);
+
+  --max: 1240px;
+  --gap: clamp(20px, 4vw, 60px);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--ink-1);
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Background gerenciado pelo Three.js */
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ───────── CUSTOM CURSOR ───────── */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--t-1), height 0.3s var(--t-1), background-color 0.3s var(--t-1);
+  mix-blend-mode: screen;
+}
+.custom-cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(123, 191, 255, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--t-1), height 0.3s var(--t-1), border-color 0.3s var(--t-1), opacity 0.3s;
+}
+.custom-cursor.active {
+  width: 48px;
+  height: 48px;
+  background: rgba(123, 191, 255, 0.15);
+  mix-blend-mode: normal;
+}
+.custom-cursor-follower.active {
+  width: 64px;
+  height: 64px;
+  border-color: rgba(95, 217, 176, 0.8);
+  opacity: 0.5;
+}
+body:hover .custom-cursor, body:hover .custom-cursor-follower { opacity: 1; }
+@media (max-width: 920px) { .custom-cursor, .custom-cursor-follower { display: none; } }
+
+main, header, footer { position: relative; z-index: 1; }
+
+a { color: inherit; text-decoration: none; }
+
+/* ───────── TYPOGRAPHY ───────── */
+h1, h2, h3, h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+  letter-spacing: -0.025em;
+  color: var(--ink-0);
+  font-weight: 600;
+}
+
+h1 { font-size: clamp(40px, 7vw, 86px); line-height: 1; letter-spacing: -0.035em; font-weight: 600; }
+h2 { font-size: clamp(28px, 4.5vw, 52px); line-height: 1.05; }
+h3 { font-size: clamp(20px, 2.5vw, 28px); line-height: 1.2; }
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--cyan);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  background: var(--cyan);
+  display: inline-block;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+p { color: var(--ink-2); margin: 0 0 16px; max-width: 64ch; }
+
+/* ───────── LAYOUT ───────── */
+.container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+section {
+  padding: clamp(80px, 14vh, 160px) 0;
+  position: relative;
+}
+
+section + section { border-top: 1px solid var(--line); }
+
+/* ───────── HEADER ───────── */
+header.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 18px var(--gap);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(7, 17, 26, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+  transition: all 0.3s var(--t-1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand .glifo { width: 56px; height: 15px; }
+.brand .name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-0);
+}
+.brand .name span { color: var(--cyan); font-weight: 500; }
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+}
+
+.nav-links a:not(.btn) {
+  font-size: 13px;
+  color: var(--ink-2);
+  font-weight: 500;
+  transition: color 0.2s var(--t-1);
+  position: relative;
+}
+.nav-links a:not(.btn):hover { color: var(--ink-0); }
+.nav-links a:not(.btn)::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -4px;
+  width: 0; height: 1px;
+  background: var(--cyan);
+  transition: width 0.3s var(--t-1);
+}
+.nav-links a:not(.btn):hover::after { width: 100%; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius-s);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: none;
+  transition: all 0.25s var(--t-1);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  color: #06121C;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px rgba(123, 191, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.btn-primary:hover {
+  color: #04101A;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(123, 191, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.btn-primary .arrow { transition: transform 0.25s var(--t-1); display: inline-block; }
+.btn-primary:hover .arrow { transform: translateX(3px); }
+/* Garante override mesmo em contexto de .nav-links com maior especificidade */
+.nav-links a.btn-primary { color: #06121C; font-weight: 700; }
+.nav-links a.btn-primary:hover { color: #04101A; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-1);
+  border: 1px solid var(--line-2);
+}
+.btn-ghost:hover {
+  background: rgba(123, 191, 255, 0.06);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.btn-lg { padding: 16px 32px; font-size: 14px; }
+
+/* ───────── HERO ───────── */
+.hero {
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* ───────── AURORA — efeito de fundo do hero ─────────
+   3 blobs de cor com blur grande, animação lenta tipo aurora boreal.
+   Performance: CSS only, GPU accelerated, sem JS. */
+.aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Máscara radial pra suavizar bordas e não vazar pra fora do hero */
+  mask-image: radial-gradient(ellipse 110% 90% at center, black 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 110% 90% at center, black 50%, transparent 100%);
+}
+
+.aurora-band {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Mint — banda primária no topo-esquerdo */
+.aurora-band--mint {
+  top: -25%; left: -15%;
+  width: 70%; height: 70%;
+  background: radial-gradient(circle, #5FD9B0 0%, transparent 65%);
+  animation: aurora-drift-1 24s ease-in-out infinite;
+}
+
+/* Cyan — banda à direita, maior */
+.aurora-band--cyan {
+  top: 10%; right: -20%;
+  width: 80%; height: 80%;
+  background: radial-gradient(circle, #7BBFFF 0%, transparent 60%);
+  opacity: 0.5;
+  animation: aurora-drift-2 32s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+/* Violeta — banda inferior, sutil */
+.aurora-band--violet {
+  bottom: -30%; left: 25%;
+  width: 65%; height: 65%;
+  background: radial-gradient(circle, #A78BFA 0%, transparent 65%);
+  opacity: 0.35;
+  animation: aurora-drift-3 38s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  33%      { transform: translate(18%, 12%) scale(1.15); }
+  66%      { transform: translate(-8%, 22%) scale(0.95); }
+}
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  40%      { transform: translate(-22%, 18%) scale(1.1); }
+  70%      { transform: translate(10%, -8%) scale(0.9); }
+}
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(0%, 0%) scale(1); }
+  35%      { transform: translate(15%, -15%) scale(1.2); }
+  65%      { transform: translate(-12%, 8%) scale(0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-band { animation: none; }
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(123,191,255,0.12), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(123,191,255,0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero h1 {
+  margin: 24px 0 28px;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.hero-sub {
+  font-size: clamp(16px, 1.6vw, 20px);
+  color: var(--ink-2);
+  max-width: 640px;
+  margin-bottom: 40px;
+  line-height: 1.55;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 56px;
+}
+
+
+/* Hero scroll hint */
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  animation: bounce 2.5s ease-in-out infinite;
+}
+
+.scroll-hint .line {
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--cyan), transparent);
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ───────── SECTION HEADERS ───────── */
+.section-head {
+  margin-bottom: 64px;
+  max-width: 720px;
+}
+
+.section-head h2 {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.section-head p {
+  font-size: 17px;
+  color: var(--ink-2);
+}
+
+/* ───────── MANIFESTO ───────── */
+.manifesto-quote {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--ink-0);
+  max-width: 920px;
+  margin: 0 0 56px;
+}
+
+.manifesto-quote .accent {
+  color: var(--mint);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 60px;
+}
+
+.pillar-card {
+  padding: 32px 28px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  background: rgba(15, 36, 51, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s var(--t-1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.4s var(--t-1);
+}
+
+.pillar-card:hover {
+  border-color: var(--line-2);
+  transform: translateY(-4px);
+}
+.pillar-card:hover::before { opacity: 1; }
+
+.pillar-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  margin-bottom: 18px;
+  display: block;
+}
+
+.pillar-card h3 {
+  font-size: 22px;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+
+.pillar-card p {
+  font-size: 14px;
+  color: var(--ink-2);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ───────── SÓCIAS ───────── */
+.socias-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.socia-card {
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  background: rgba(15, 36, 51, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s var(--t-1);
+  position: relative;
+}
+
+.socia-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+.socia-card[data-cor="cyan"]:hover { border-color: rgba(123,191,255,0.5); }
+.socia-card[data-cor="rose"]:hover { border-color: rgba(244,114,182,0.5); }
+.socia-card[data-cor="mint"]:hover { border-color: rgba(95,217,176,0.5); }
+
+.socia-head {
+  padding: 36px 32px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.socia-head::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  opacity: 0.08;
+}
+.socia-card[data-cor="cyan"] .socia-head::before { background: var(--cyan); }
+.socia-card[data-cor="rose"] .socia-head::before { background: var(--rose); }
+.socia-card[data-cor="mint"] .socia-head::before { background: var(--mint); }
+
+.socia-avatar {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--ink-0);
+  margin-bottom: 22px;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  overflow: hidden;
+  isolation: isolate;
+}
+.socia-card[data-cor="cyan"] .socia-avatar { background: linear-gradient(135deg, var(--cyan), var(--cyan-d)); }
+.socia-card[data-cor="rose"] .socia-avatar { background: linear-gradient(135deg, var(--rose), #C03482); }
+.socia-card[data-cor="mint"] .socia-avatar { background: linear-gradient(135deg, var(--mint), var(--mint-d)); }
+
+/* Foto da sócia — substitui a letra quando carregada */
+.socia-avatar .socia-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+  transition: opacity 0.4s var(--t-1);
+}
+
+/* Ring de cor ao redor da foto pra manter identidade da sócia */
+.socia-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, var(--cyan), var(--mint)) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s var(--t-1);
+}
+.socia-card[data-cor="cyan"] .socia-avatar::after { background: linear-gradient(135deg, var(--cyan), var(--cyan-d)) border-box; }
+.socia-card[data-cor="rose"] .socia-avatar::after { background: linear-gradient(135deg, var(--rose), #C03482) border-box; }
+.socia-card[data-cor="mint"] .socia-avatar::after { background: linear-gradient(135deg, var(--mint), var(--mint-d)) border-box; }
+.socia-avatar.has-foto::after { opacity: 1; }
+.socia-avatar.has-foto { background: var(--bg-2); }
+
+.socia-card h3 {
+  font-size: 26px;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.socia-area {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  position: relative;
+}
+.socia-card[data-cor="cyan"] .socia-area { color: var(--cyan); }
+.socia-card[data-cor="rose"] .socia-area { color: var(--rose); }
+.socia-card[data-cor="mint"] .socia-area { color: var(--mint); }
+
+.socia-body {
+  padding: 0 32px 32px;
+}
+
+.socia-skills {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+}
+
+.socia-skills li {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.socia-skills li:last-child { border-bottom: none; }
+.socia-skills li::before {
+  content: '·';
+  color: var(--cyan);
+  font-size: 18px;
+  line-height: 0;
+}
+
+/* ───────── METODOLOGIA ───────── */
+.metodo-section {
+  background: linear-gradient(180deg, var(--bg-0), var(--bg-1) 50%, var(--bg-0));
+  position: relative;
+}
+
+.metodo-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(123,191,255,0.08), transparent 35%),
+    radial-gradient(circle at 85% 80%, rgba(95,217,176,0.06), transparent 35%);
+  pointer-events: none;
+}
+
+.metodo-flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.metodo-step {
+  padding: 32px 26px;
+  border: 1px solid var(--line);
+  border-right: none;
+  background: linear-gradient(180deg, rgba(15,36,51,0.5), rgba(15,36,51,0.15));
+  position: relative;
+  transition: all 0.4s var(--t-1);
+}
+
+.metodo-step:first-child { border-radius: var(--radius-m) 0 0 var(--radius-m); }
+.metodo-step:last-child { border-right: 1px solid var(--line); border-radius: 0 var(--radius-m) var(--radius-m) 0; }
+
+.metodo-step:hover {
+  background: linear-gradient(180deg, rgba(15,36,51,0.8), rgba(15,36,51,0.3));
+  transform: translateY(-3px);
+}
+
+.metodo-step::after {
+  content: '→';
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background: var(--bg-0);
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  z-index: 2;
+}
+.metodo-step:last-child::after { display: none; }
+
+.metodo-num {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  color: var(--bg-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 20px rgba(123,191,255,0.25);
+}
+
+.metodo-step h3 {
+  font-size: 19px;
+  margin-bottom: 10px;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+.metodo-step p {
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.metodo-step .metodo-tag {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(123,191,255,0.1);
+  color: var(--cyan);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Destaque do fechamento antecipado */
+.destaque-fechamento {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 50px;
+  align-items: center;
+  padding: 48px 52px;
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-1));
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  position: relative;
+  overflow: hidden;
+}
+
+.destaque-fechamento::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(95,217,176,0.15), transparent 60%);
+  pointer-events: none;
+}
+
+.destaque-fechamento h3 {
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.2;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+
+.destaque-fechamento h3 .accent {
+  background: linear-gradient(135deg, var(--mint), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.destaque-fechamento p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  margin: 0 0 12px;
+}
+
+.destaque-fechamento .erp-nota {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 14px;
+  background: rgba(123,191,255,0.08);
+  border: 1px solid var(--line-2);
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.destaque-fechamento .erp-nota::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 8px var(--mint);
+}
+
+.fechamento-viz {
+  position: relative;
+  z-index: 1;
+}
+
+/* ───────── AUTOMAÇÕES ───────── */
+.aut-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.aut-tab {
+  padding: 9px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--ink-2);
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s var(--t-1);
+  letter-spacing: 0.02em;
+}
+
+.aut-tab:hover { color: var(--ink-0); border-color: var(--cyan); }
+.aut-tab.active {
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  color: var(--bg-0);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.aut-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.aut-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--bg-1);
+  overflow: hidden;
+  transition: all 0.4s var(--t-1);
+  display: flex;
+  flex-direction: column;
+}
+
+.aut-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+}
+
+.aut-mock {
+  height: 180px;
+  background: linear-gradient(135deg, var(--bg-2), var(--bg-3));
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.aut-mock svg { width: 100%; height: 100%; max-width: 280px; }
+
+.aut-body {
+  padding: 22px 24px 26px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.aut-frente {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.aut-frente::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.aut-card[data-frente="cibele"] .aut-frente { color: var(--cyan); }
+.aut-card[data-frente="cibele"] .aut-frente::before { background: var(--cyan); }
+.aut-card[data-frente="erica"] .aut-frente { color: var(--rose); }
+.aut-card[data-frente="erica"] .aut-frente::before { background: var(--rose); }
+.aut-card[data-frente="michele"] .aut-frente { color: var(--mint); }
+.aut-card[data-frente="michele"] .aut-frente::before { background: var(--mint); }
+
+.aut-card h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink-0);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.aut-card p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.aut-cta {
+  margin-top: 48px;
+  text-align: center;
+}
+
+.aut-cta-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  color: var(--ink-1);
+  margin-bottom: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ───────── COMO TRABALHAMOS ───────── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+.step-item {
+  padding: 36px 28px;
+  border-left: 1px solid var(--line);
+  position: relative;
+}
+
+.step-item:first-child { border-left: none; }
+
+.step-item::before {
+  content: '';
+  position: absolute;
+  top: 36px; left: -1px;
+  width: 1px; height: 32px;
+  background: linear-gradient(180deg, var(--cyan), transparent);
+}
+.step-item:first-child::before { display: none; }
+
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.step-item h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.step-item p {
+  font-size: 14px;
+  color: var(--ink-2);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.step-time {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 4px 11px;
+  background: rgba(123,191,255,0.1);
+  border: 1px solid var(--line-2);
+  color: var(--cyan);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 100px;
+  letter-spacing: 0.1em;
+}
+
+/* ───────── COMO ESCOLHEMOS ───────── */
+.criterios {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.crit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.crit-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  color: var(--ink-1);
+}
+.crit-list li:last-child { border-bottom: none; }
+
+.crit-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(95,217,176,0.12);
+  color: var(--mint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ───────── CTA + CONTATO ───────── */
+.contato-section {
+  background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  position: relative;
+  overflow: hidden;
+}
+
+.contato-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1000px; height: 1000px;
+  background: radial-gradient(circle, rgba(95,217,176,0.06), transparent 50%);
+  pointer-events: none;
+}
+
+.contato-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  position: relative;
+}
+
+.contato-pitch h2 {
+  margin-bottom: 24px;
+}
+
+.contato-pitch h2 .accent {
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.contato-info {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.contato-canais {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.canal-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: rgba(15,36,51,0.4);
+  transition: all 0.25s var(--t-1);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.canal-item:hover {
+  border-color: var(--cyan);
+  background: rgba(123,191,255,0.05);
+  transform: translateX(4px);
+}
+
+.canal-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: rgba(123,191,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.canal-text { flex: 1; }
+.canal-text strong { display: block; font-size: 13px; color: var(--ink-0); font-weight: 600; }
+.canal-text small { font-size: 11.5px; color: var(--ink-3); }
+
+/* Form multi-step */
+.contato-form {
+  background: var(--bg-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Progress bar */
+.form-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+.form-progress-step {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.4s var(--t-1);
+}
+.form-progress-step.done { background: var(--mint); }
+.form-progress-step.active {
+  background: linear-gradient(90deg, var(--cyan), var(--mint));
+}
+
+/* Passos */
+.form-step {
+  display: none;
+  animation: fadeStep 0.4s var(--t-1);
+}
+.form-step.active { display: block; }
+@keyframes fadeStep {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Step indicator */
+.form-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* Navegação entre passos */
+.form-nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.form-nav .btn-step-prev {
+  padding: 14px 18px;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  border-radius: var(--radius-s);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--t-1);
+}
+.form-nav .btn-step-prev:hover { color: var(--ink-0); border-color: var(--cyan); }
+.form-nav .btn-step-next,
+.form-nav .form-submit {
+  flex: 1;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  color: #06121C;
+  border: none;
+  border-radius: var(--radius-s);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.25s var(--t-1);
+  margin: 0;
+}
+.form-nav .btn-step-next:hover,
+.form-nav .form-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(123,191,255,0.35);
+}
+.form-nav .btn-step-next:disabled,
+.form-nav .form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Cartões de seleção (áreas, tamanho, tem_erp) */
+.opt-grid {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.opt-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.opt-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+.opt-card {
+  position: relative;
+  padding: 14px 14px;
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition: all 0.2s var(--t-1);
+  text-align: left;
+}
+.opt-card:hover {
+  border-color: var(--cyan);
+  background: rgba(123,191,255,0.04);
+}
+.opt-card.selected {
+  border-color: var(--cyan);
+  background: rgba(123,191,255,0.1);
+  box-shadow: 0 0 0 2px rgba(123,191,255,0.18);
+}
+.opt-card .opt-emoji {
+  font-size: 22px;
+  margin-bottom: 6px;
+  display: block;
+}
+.opt-card .opt-titulo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  color: var(--ink-0);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin-bottom: 3px;
+}
+.opt-card .opt-desc {
+  font-size: 10.5px;
+  color: var(--ink-3);
+  line-height: 1.4;
+}
+.opt-card .opt-check {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s var(--t-1);
+}
+.opt-card.selected .opt-check {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  color: var(--bg-0);
+}
+.opt-card.selected .opt-check::after {
+  content: '✓';
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Cartões de automação (mais densos) */
+.aut-pick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 12px;
+}
+.aut-pick-grid::-webkit-scrollbar { width: 6px; }
+.aut-pick-grid::-webkit-scrollbar-track { background: var(--bg-0); }
+.aut-pick-grid::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 3px; }
+
+.aut-pick {
+  padding: 9px 11px;
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.18s var(--t-1);
+  position: relative;
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+.aut-pick:hover { border-color: var(--line-2); background: rgba(123,191,255,0.03); }
+.aut-pick.selected { border-color: var(--cor-area); background: rgba(255,255,255,0.02); }
+.aut-pick.selected::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cor-area);
+  border-radius: 6px 0 0 6px;
+}
+.aut-pick-emoji {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  background: rgba(123,191,255,0.08);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.aut-pick.selected .aut-pick-emoji { background: var(--cor-area); color: var(--bg-0); }
+.aut-pick-body { flex: 1; min-width: 0; }
+.aut-pick-nome {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  color: var(--ink-0);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  margin-bottom: 2px;
+}
+.aut-pick-desc {
+  font-size: 9.5px;
+  color: var(--ink-3);
+  line-height: 1.45;
+}
+.aut-pick-area {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cor-area);
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* Resumo do passo */
+.step-resumo {
+  margin: 14px 0;
+  padding: 11px 13px;
+  background: rgba(95,217,176,0.06);
+  border-left: 2px solid var(--mint);
+  border-radius: 0 6px 6px 0;
+  font-size: 11.5px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.step-resumo strong { color: var(--mint); font-weight: 700; }
+
+/* Empty state */
+.aut-empty {
+  padding: 24px 18px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 12px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-s);
+  font-style: italic;
+}
+
+.form-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--mint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.form-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  color: var(--ink-0);
+  margin-bottom: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.form-row {
+  margin-bottom: 18px;
+}
+
+.form-row label {
+  display: block;
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-row input,
+.form-row textarea {
+  width: 100%;
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  padding: 12px 14px;
+  color: var(--ink-0);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s var(--t-1);
+}
+
+.form-row input:focus,
+.form-row textarea:focus {
+  border-color: var(--cyan);
+  background: var(--bg-1);
+  box-shadow: 0 0 0 3px rgba(123,191,255,0.1);
+}
+
+.form-row textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: 'Inter', sans-serif;
+}
+
+.form-submit {
+  width: 100%;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, var(--cyan), var(--mint));
+  color: var(--bg-0);
+  border: none;
+  border-radius: var(--radius-s);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s var(--t-1);
+  margin-top: 8px;
+  letter-spacing: 0.02em;
+}
+
+.form-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(123,191,255,0.35);
+}
+
+.form-feedback {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(95,217,176,0.1);
+  border: 1px solid rgba(95,217,176,0.3);
+  color: var(--mint);
+  border-radius: var(--radius-s);
+  font-size: 12.5px;
+  display: none;
+}
+
+/* ───────── FOOTER ───────── */
+footer {
+  padding: 60px var(--gap) 36px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-0);
+}
+
+.footer-content {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 60px;
+  align-items: start;
+  margin-bottom: 36px;
+}
+
+.footer-brand .glifo { width: 90px; height: 24px; margin-bottom: 12px; }
+.footer-brand .name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.footer-brand .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.footer-cidades {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.footer-cidades-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.cidade-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cidade-list span {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  font-size: 11px;
+  color: var(--ink-2);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.footer-links a {
+  color: var(--ink-3);
+  transition: color 0.2s var(--t-1);
+}
+.footer-links a:hover { color: var(--cyan); }
+
+.footer-bottom {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-4);
+  letter-spacing: 0.1em;
+}
+
+/* ───────── REVEAL ANIMATIONS (GSAP) ───────── */
+.reveal, .reveal-stagger > * {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ───────── RESPONSIVE ───────── */
+@media (max-width: 920px) {
+  .nav-links { gap: 22px; }
+  .nav-links a:not(.btn) { display: none; }
+
+  .hero { padding: 100px 0 60px; min-height: auto; }
+  .hero-cta { flex-direction: column; align-items: stretch; }
+  .hero-cta .btn { justify-content: center; }
+  .hero-pillars { gap: 16px; }
+
+  .manifesto-grid { grid-template-columns: 1fr; }
+  .socias-grid { grid-template-columns: 1fr; }
+  .aut-grid { grid-template-columns: 1fr 1fr; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .step-item { border-left: none; border-top: 1px solid var(--line); padding: 28px 0; }
+  .step-item:first-child { border-top: none; }
+  .step-item::before { display: none; }
+
+  .criterios { grid-template-columns: 1fr; gap: 32px; }
+  .contato-grid { grid-template-columns: 1fr; gap: 40px; }
+
+  .footer-content { grid-template-columns: 1fr; gap: 30px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+@media (max-width: 560px) {
+  .aut-grid { grid-template-columns: 1fr; }
+  .contato-form { padding: 26px 22px; }
+}
+
+/* ───────── ACESSIBILIDADE ───────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal, .reveal-stagger > * { opacity: 1; transform: none; }
+}
+
+::selection { background: var(--cyan); color: var(--bg-0); }
+
+</style>
+</head>
+
+<body>
+<div id="canvas-container"></div>
+<div class="custom-cursor"></div>
+<div class="custom-cursor-follower"></div>
+
+<!-- ═════════════════ HEADER ═════════════════ -->
+<header class="nav">
+  <a href="#top" class="brand">
+    <svg class="glifo" viewBox="0 0 60 16" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(30, 8)">
+        <circle cy="0" r="2" fill="#7BBFFF" opacity="0.8">
+          <animate attributeName="cx" values="-24; -14; -24" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+        </circle>
+        <rect y="-0.75" height="1.5" fill="#7BBFFF" opacity="0.4">
+          <animate attributeName="x" values="-24; -14; -24" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          <animate attributeName="width" values="20; 10; 20" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+        </rect>
+        
+        <circle cx="0" cy="0" r="6" fill="#5FD9B0" opacity="0.3">
+          <animate attributeName="r" values="4.5; 7; 4.5" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          <animate attributeName="opacity" values="0.2; 0.6; 0.2" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+        </circle>
+        <circle cx="0" cy="0" r="3" fill="#5FD9B0"/>
+        
+        <rect y="-0.75" height="1.5" fill="#7BBFFF" opacity="0.4">
+          <animate attributeName="x" values="4; 4; 4" dur="2.5s" repeatCount="indefinite" />
+          <animate attributeName="width" values="20; 10; 20" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+        </rect>
+        <circle cy="0" r="2" fill="#7BBFFF" opacity="0.8">
+          <animate attributeName="cx" values="24; 14; 24" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+        </circle>
+      </g>
+    </svg>
+    <div class="name">praja <span>conecta</span></div>
+  </a>
+  <nav class="nav-links">
+    <a href="#manifesto">Manifesto</a>
+    <a href="#metodologia">Metodologia</a>
+    <a href="#socias">Sócias</a>
+    <a href="#automacoes">Automações</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#contato" class="btn btn-primary">
+      Conversar
+      <span class="arrow">→</span>
+    </a>
+  </nav>
+</header>
+
+<main id="top">
+
+<!-- ═════════════════ HERO ═════════════════ -->
+<section class="hero">
+  <div class="aurora" aria-hidden="true">
+    <div class="aurora-band aurora-band--mint"></div>
+    <div class="aurora-band aurora-band--cyan"></div>
+    <div class="aurora-band aurora-band--violet"></div>
+  </div>
+  <div class="container hero-content">
+    <h1 class="reveal">
+      Automação para<br/>
+      quem <span class="accent">opera.</span>
+    </h1>
+    <p class="hero-sub reveal">
+      Desenhamos e implementamos eficiência no seu processo.<br>Sem intermediários, com foco no resultado.
+    </p>
+    <div class="hero-cta reveal">
+      <a href="#contato" class="btn btn-primary btn-lg">
+        Marcar conversa de 30 min
+        <span class="arrow">→</span>
+      </a>
+      <a href="#metodologia" class="btn btn-ghost btn-lg">Ver metodologia</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <span class="line"></span>
+  </div>
+</section>
+
+<!-- ═════════════════ MANIFESTO ═════════════════ -->
+<section id="manifesto">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Manifesto</span>
+      <h2>Por que existimos</h2>
+    </div>
+
+    <div class="manifesto-quote reveal">
+      A maioria das PMEs não precisa de uma <span class="accent">agência de transformação digital.</span> Precisa de gente que mapeia o processo do jeito que ele acontece hoje, identifica o que dá pra automatizar, e implementa - sem criar dependência.
+    </div>
+
+    <div class="manifesto-grid reveal-stagger">
+      <div class="pillar-card">
+        <span class="pillar-num">01 / Método antes da ferramenta</span>
+        <h3>Mapeamento de processo de verdade.</h3>
+        <p>Não chegamos vendendo sistema. Sentamos, observamos, desenhamos o fluxo atual - e só depois apontamos onde a automação faz sentido. Sem promessa cega.</p>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-num">02 / Squad enxuto</span>
+        <h3>Você fala com quem decide.</h3>
+        <p>Não tem PM, gerente de conta, hierarquia. São as 3 sócias operando, escutando e entregando. Resposta rápida e contexto preservado em cada call.</p>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-num">03 / Métrica antes</span>
+        <h3>KPI combinado na largada.</h3>
+        <p>Cada proposta tem indicador definido - dias a menos no fechamento, horas economizadas, redução de retrabalho. Se a entrega não chegar lá, a gente revisa antes de cobrar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════ SÓCIAS ═════════════════ -->
+<section id="socias">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">As três frentes</span>
+      <h2>Operadoras-fundadoras.<br/>Cada uma com uma especialidade.</h2>
+      <p>Um único time, três áreas profundas. A cada projeto, as sócias da frente que faz sentido entram - sem terceirizar, sem virar agência.</p>
+    </div>
+
+    <div class="socias-grid reveal-stagger">
+      <div class="socia-card" data-cor="cyan">
+        <div class="socia-head">
+          <div class="socia-avatar" data-letra="C">
+            <span class="socia-letra">C</span>
+            <picture>
+              <source srcset="assets/cibele.webp" type="image/webp">
+              <img class="socia-foto" src="assets/cibele.jpg" alt="Cibele · Praja Conecta"
+                   onload="this.closest('.socia-avatar').classList.add('has-foto')"
+                   onerror="this.style.display='none'">
+            </picture>
+          </div>
+          <h3>Cibele</h3>
+          <div class="socia-area">Financeiro · Controladoria</div>
+        </div>
+        <div class="socia-body">
+          <p>Cuida da frente financeira ponta-a-ponta - do controle diário até painéis de gestão que dão visão real do negócio.</p>
+          <ul class="socia-skills">
+            <li>Fluxo de caixa e conciliação bancária</li>
+            <li>Régua de cobrança automatizada</li>
+            <li>Painéis de DRE, margem e inadimplência</li>
+            <li>Pagamentos e alçadas via WhatsApp</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="socia-card" data-cor="rose">
+        <div class="socia-head">
+          <div class="socia-avatar" data-letra="E">
+            <span class="socia-letra">E</span>
+            <picture>
+              <source srcset="assets/erica.webp" type="image/webp">
+              <img class="socia-foto" src="assets/erica.jpg" alt="Erica · Praja Conecta"
+                   onload="this.closest('.socia-avatar').classList.add('has-foto')"
+                   onerror="this.style.display='none'">
+            </picture>
+          </div>
+          <h3>Erica</h3>
+          <div class="socia-area">UX · CS · Tráfego</div>
+        </div>
+        <div class="socia-body">
+          <p>Cuida da experiência do cliente - desde como ele encontra a empresa até o pós-venda. Sites, atendimento e captação digital.</p>
+          <ul class="socia-skills">
+            <li>Sites institucionais e landing pages</li>
+            <li>WhatsApp Business + chatbot</li>
+            <li>Tráfego pago Google Ads e Meta</li>
+            <li>Pesquisa NPS e régua de reativação</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="socia-card" data-cor="mint">
+        <div class="socia-head">
+          <div class="socia-avatar" data-letra="M">
+            <span class="socia-letra">M</span>
+            <picture>
+              <source srcset="assets/michele.webp" type="image/webp">
+              <img class="socia-foto" src="assets/michele.jpg" alt="Michele · Praja Conecta"
+                   onload="this.closest('.socia-avatar').classList.add('has-foto')"
+                   onerror="this.style.display='none'">
+            </picture>
+          </div>
+          <h3>Michele</h3>
+          <div class="socia-area">Fiscal · Estoque · Compras</div>
+        </div>
+        <div class="socia-body">
+          <p>Cuida do que costuma virar dor de cabeça em PME - fiscal, estoque, compras e adequação a mudanças regulatórias.</p>
+          <ul class="socia-skills">
+            <li>NF-e, classificação NCM/CFOP, DIFAL</li>
+            <li>Esteira de compras automatizada</li>
+            <li>Curva ABC e ruptura de estoque</li>
+            <li>Roadmap de Reforma Tributária (IBS/CBS)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════ METODOLOGIA ═════════════════ -->
+<section id="metodologia" class="metodo-section">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Metodologia</span>
+      <h2>Mapeamos antes de automatizar.</h2>
+      <p>Nossa metodologia parte de algo simples: você não automatiza o que não entende. Por isso a gente começa pelo processo - do jeito que ele acontece hoje, não do jeito que está no manual.</p>
+    </div>
+
+    <!-- 4 etapas do método -->
+    <div class="metodo-flow reveal-stagger">
+      <div class="metodo-step">
+        <div class="metodo-num">01</div>
+        <h3>Mapeamento</h3>
+        <p>Sentamos com o time, observamos a rotina, desenhamos o fluxo real do processo - incluindo as gambiarras que viraram padrão.</p>
+        <span class="metodo-tag">2-5 dias</span>
+      </div>
+      <div class="metodo-step">
+        <div class="metodo-num">02</div>
+        <h3>Diagnóstico</h3>
+        <p>Marcamos onde o processo trava, onde tem retrabalho, onde uma automação poupa horas. Apresentamos com prioridade e ganho esperado.</p>
+        <span class="metodo-tag">Documento +call</span>
+      </div>
+      <div class="metodo-step">
+        <div class="metodo-num">03</div>
+        <h3>Automação</h3>
+        <p>Construímos o agente, integramos com o ERP que você usa, testamos com dados reais e treinamos o time pra operar.</p>
+        <span class="metodo-tag">2-6 semanas</span>
+      </div>
+      <div class="metodo-step">
+        <div class="metodo-num">04</div>
+        <h3>Operação</h3>
+        <p>Acompanhamos o uso, ajustamos no primeiro mês, e medimos o KPI combinado. Sem entrega-e-some.</p>
+        <span class="metodo-tag">30 dias incluso</span>
+      </div>
+    </div>
+
+    <!-- Destaque do fechamento antecipado + nota sobre ERP -->
+    <div class="destaque-fechamento reveal">
+      <div>
+        <span class="eyebrow" style="color: var(--mint);">Caso típico de ganho</span>
+        <h3 style="margin-top: 14px;">Fechamento contábil mensal<br/><span class="accent">antecipado em até 15 dias.</span></h3>
+        <p>Um dos resultados mais consistentes da metodologia: empresas que fechavam o mês no dia 20 passam a fechar no dia 5. Conciliação automática, integração banco/folha/NFs e reconciliação contínua liberam o financeiro pra tomar decisão, não pra correr atrás de número.</p>
+        <p style="font-size: 13px; color: var(--ink-3);">A pré-condição é simples: sua empresa precisa ter um ERP de gestão. Não importa qual - temos profundidade técnica em ERP e adaptamos a metodologia ao que vocês já operam.</p>
+        <div class="erp-nota">Domínio profundo de ERP de gestão para PME</div>
+      </div>
+      <div class="fechamento-viz">
+        <picture>
+          <source srcset="assets/mockup-fechamento.webp" type="image/webp">
+          <img src="assets/mockup-fechamento.jpg" alt="Dashboard de fechamento contábil mostrando redução de 30 para 15 dias" style="width:100%;max-width:520px;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,0.45);border:1px solid rgba(123,191,255,0.15);">
+        </picture>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════ AUTOMAÇÕES ═════════════════ -->
+<section id="automacoes">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Catálogo de automações</span>
+      <h2>O que conseguimos automatizar.</h2>
+      <p>9 das 25 automações que mapeamos como prontas pra desenhar e implementar. Cada uma resolve um gargalo concreto. Filtre pela frente que faz sentido pra sua operação.</p>
+    </div>
+
+    <div class="aut-tabs reveal">
+      <button class="aut-tab active" data-filter="todos">Todas</button>
+      <button class="aut-tab" data-filter="cibele">Financeiro · Cibele</button>
+      <button class="aut-tab" data-filter="erica">UX · CS · Tráfego · Erica</button>
+      <button class="aut-tab" data-filter="michele">Fiscal · Estoque · Michele</button>
+    </div>
+
+    <div class="aut-grid reveal-stagger" id="autGrid">
+
+      <!-- CIBELE - DASHBOARD -->
+      <article class="aut-card" data-frente="cibele">
+        <div class="aut-mock">
+          <svg viewBox="0 0 320 160">
+            <defs>
+              <linearGradient id="g-dash" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#7BBFFF" stop-opacity=".9"/>
+                <stop offset="100%" stop-color="#7BBFFF" stop-opacity=".3"/>
+              </linearGradient>
+            </defs>
+            <rect width="320" height="160" rx="8" fill="#fff" stroke="#7BBFFF33"/>
+            <g transform="translate(12,12)">
+              <rect width="92" height="40" rx="5" fill="#7BBFFF10"/>
+              <text x="8" y="14" font-family="JetBrains Mono" font-size="8" fill="#7BBFFF" font-weight="700">RECEITA</text>
+              <text x="8" y="32" font-family="Space Grotesk" font-size="16" fill="#1B3A4B" font-weight="700">R$ 142k</text>
+            </g>
+            <g transform="translate(112,12)">
+              <rect width="92" height="40" rx="5" fill="#5FD9B010"/>
+              <text x="8" y="14" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700">MARGEM</text>
+              <text x="8" y="32" font-family="Space Grotesk" font-size="16" fill="#1B3A4B" font-weight="700">28%</text>
+            </g>
+            <g transform="translate(212,12)">
+              <rect width="96" height="40" rx="5" fill="#FFD16610"/>
+              <text x="8" y="14" font-family="JetBrains Mono" font-size="8" fill="#B8860B" font-weight="700">A RECEBER</text>
+              <text x="8" y="32" font-family="Space Grotesk" font-size="16" fill="#1B3A4B" font-weight="700">R$ 38k</text>
+            </g>
+            <g transform="translate(12,68)">
+              <rect x="0" y="50" width="22" height="22" fill="url(#g-dash)" rx="2"/>
+              <rect x="30" y="35" width="22" height="37" fill="url(#g-dash)" rx="2"/>
+              <rect x="60" y="20" width="22" height="52" fill="url(#g-dash)" rx="2"/>
+              <rect x="90" y="42" width="22" height="30" fill="url(#g-dash)" rx="2"/>
+              <rect x="120" y="25" width="22" height="47" fill="url(#g-dash)" rx="2"/>
+              <rect x="150" y="10" width="22" height="62" fill="#7BBFFF" rx="2"/>
+              <rect x="180" y="18" width="22" height="54" fill="url(#g-dash)" rx="2"/>
+              <path d="M 11 55 L 41 40 L 71 25 L 101 47 L 131 30 L 161 15 L 191 23" stroke="#5FD9B0" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Cibele</span>
+          <h4>Painel financeiro consolidado</h4>
+          <p>DRE, margem e fluxo de caixa em tempo real, com drill-down por centro de custo. Visão diária da saúde da operação.</p>
+        </div>
+      </article>
+
+      <!-- CIBELE - CHAT/COBRANÇA -->
+      <article class="aut-card" data-frente="cibele">
+        <div class="aut-mock">
+          <svg viewBox="0 0 280 170">
+            <rect width="280" height="170" rx="14" fill="#ECE5DD"/>
+            <rect width="280" height="32" fill="#075E54"/>
+            <circle cx="22" cy="16" r="10" fill="#fff" opacity=".25"/>
+            <text x="40" y="14" font-family="Inter" font-size="9" fill="#fff" font-weight="600">Praja · Cobrança</text>
+            <text x="40" y="24" font-family="Inter" font-size="7" fill="#a8e6d4">online · automatizado</text>
+            <g transform="translate(10,42)">
+              <rect width="144" height="32" rx="6" fill="#fff"/>
+              <text x="8" y="13" font-family="Inter" font-size="7.5" fill="#1B3A4B" font-weight="600">Olá! Vi que sua fatura</text>
+              <text x="8" y="22" font-family="Inter" font-size="7.5" fill="#1B3A4B" font-weight="600">venceu ontem. Posso te</text>
+              <text x="8" y="31" font-family="Inter" font-size="7.5" fill="#1B3A4B" font-weight="600">enviar a 2ª via?</text>
+            </g>
+            <g transform="translate(140,82)">
+              <rect width="130" height="28" rx="6" fill="#DCF8C6"/>
+              <text x="8" y="13" font-family="Inter" font-size="7.5" fill="#1B3A4B" font-weight="600">Sim! Pode mandar</text>
+              <text x="8" y="22" font-family="Inter" font-size="7.5" fill="#1B3A4B" font-weight="600">o pix por favor</text>
+            </g>
+            <g transform="translate(10,118)">
+              <rect width="174" height="42" rx="6" fill="#fff"/>
+              <text x="8" y="13" font-family="Inter" font-size="7.5" fill="#1B3A4B" font-weight="600">📎 Pix gerado</text>
+              <rect x="8" y="18" width="158" height="18" rx="3" fill="#7BBFFF15"/>
+              <text x="14" y="30" font-family="JetBrains Mono" font-size="7" fill="#7BBFFF" font-weight="700">R$ 1.247,80 · vence 21/05</text>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Cibele</span>
+          <h4>Régua de cobrança automatizada</h4>
+          <p>WhatsApp, e-mail e SMS escalonados quando o cliente atrasa. Reduz inadimplência sem você precisar lembrar de cobrar.</p>
+        </div>
+      </article>
+
+      <!-- CIBELE - PIX -->
+      <article class="aut-card" data-frente="cibele">
+        <div class="aut-mock">
+          <svg viewBox="0 0 200 170">
+            <rect x="10" y="6" width="180" height="158" rx="14" fill="#0E1014" stroke="#7BBFFF55" stroke-width="1.5"/>
+            <rect x="18" y="14" width="164" height="142" rx="9" fill="#fff"/>
+            <rect x="18" y="14" width="164" height="22" fill="#7BBFFF"/>
+            <text x="100" y="29" font-family="Inter" font-size="8" fill="#fff" font-weight="700" text-anchor="middle">Pagar via Pix</text>
+            <text x="100" y="56" font-family="JetBrains Mono" font-size="7" fill="#6B7280" text-anchor="middle">VALOR</text>
+            <text x="100" y="76" font-family="Space Grotesk" font-size="20" fill="#1B3A4B" font-weight="700" text-anchor="middle">R$ 1.480</text>
+            <g transform="translate(72,86)">
+              <rect width="56" height="56" fill="#fff" stroke="#7BBFFF66"/>
+              <g fill="#0E1014">
+                <rect x="3" y="3" width="14" height="14"/>
+                <rect x="6" y="6" width="8" height="8" fill="#fff"/>
+                <rect x="9" y="9" width="2" height="2" fill="#0E1014"/>
+                <rect x="39" y="3" width="14" height="14"/>
+                <rect x="42" y="6" width="8" height="8" fill="#fff"/>
+                <rect x="3" y="39" width="14" height="14"/>
+                <rect x="6" y="42" width="8" height="8" fill="#fff"/>
+                <rect x="22" y="22" width="3" height="3"/>
+                <rect x="29" y="22" width="3" height="3"/>
+                <rect x="36" y="29" width="3" height="3"/>
+                <rect x="22" y="29" width="3" height="3"/>
+                <rect x="29" y="36" width="3" height="3"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Cibele</span>
+          <h4>Pagamentos automatizados</h4>
+          <p>Aprovação por WhatsApp, agendamento Pix/TED, comprovante anexado no ERP. Alçada e segurança sem fricção.</p>
+        </div>
+      </article>
+
+      <!-- ERICA - LANDING -->
+      <article class="aut-card" data-frente="erica">
+        <div class="aut-mock">
+          <svg viewBox="0 0 300 170">
+            <rect width="300" height="170" rx="6" fill="#fff" stroke="#A78BFA33"/>
+            <rect width="300" height="22" fill="#0E1014"/>
+            <circle cx="14" cy="11" r="3" fill="#A78BFA"/>
+            <text x="22" y="14" font-family="Space Grotesk" font-size="7" fill="#fff" font-weight="700">SUA EMPRESA</text>
+            <text x="180" y="14" font-family="Inter" font-size="6" fill="#9CA3AF">Sobre · Serviços · Contato</text>
+            <rect x="262" y="6" width="32" height="11" rx="2" fill="#A78BFA"/>
+            <text x="278" y="14" font-family="Inter" font-size="6" fill="#fff" font-weight="700" text-anchor="middle">Falar</text>
+            <rect y="22" width="300" height="74" fill="#A78BFA08"/>
+            <text x="20" y="48" font-family="Space Grotesk" font-size="14" fill="#1B3A4B" font-weight="700">Sua dor, nossa</text>
+            <text x="20" y="64" font-family="Space Grotesk" font-size="14" fill="#A78BFA" font-weight="700">solução em 7 dias.</text>
+            <text x="20" y="78" font-family="Inter" font-size="7" fill="#6B7280">Site novo pra empresa que quer crescer.</text>
+            <rect x="20" y="84" width="60" height="14" rx="3" fill="#A78BFA"/>
+            <text x="50" y="93" font-family="Inter" font-size="7" fill="#fff" font-weight="700" text-anchor="middle">Quero saber mais →</text>
+            <rect x="200" y="36" width="78" height="52" rx="4" fill="#fff" stroke="#A78BFA55"/>
+            <rect x="206" y="42" width="36" height="3" rx="1" fill="#A78BFA"/>
+            <rect x="206" y="49" width="64" height="2" fill="#E5E7EB"/>
+            <rect x="206" y="55" width="56" height="2" fill="#E5E7EB"/>
+            <rect x="206" y="61" width="44" height="2" fill="#E5E7EB"/>
+            <rect x="206" y="74" width="20" height="9" rx="2" fill="#5FD9B0"/>
+            <g transform="translate(0,108)">
+              <rect x="14" width="84" height="50" rx="4" fill="#FAFBFC" stroke="#E5E7EB"/>
+              <circle cx="26" cy="14" r="6" fill="#A78BFA33"/>
+              <text x="36" y="17" font-family="Space Grotesk" font-size="7" fill="#1B3A4B" font-weight="700">Rápido</text>
+              <rect x="108" width="84" height="50" rx="4" fill="#FAFBFC" stroke="#E5E7EB"/>
+              <circle cx="120" cy="14" r="6" fill="#5FD9B033"/>
+              <text x="130" y="17" font-family="Space Grotesk" font-size="7" fill="#1B3A4B" font-weight="700">Seguro</text>
+              <rect x="202" width="84" height="50" rx="4" fill="#FAFBFC" stroke="#E5E7EB"/>
+              <circle cx="214" cy="14" r="6" fill="#FFD16633"/>
+              <text x="224" y="17" font-family="Space Grotesk" font-size="7" fill="#1B3A4B" font-weight="700">Mensurado</text>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Erica</span>
+          <h4>Site institucional novo</h4>
+          <p>5 páginas, identidade visual atualizada, SEO básico, mobile-first. Cara de empresa séria sem custar como agência grande.</p>
+        </div>
+      </article>
+
+      <!-- ERICA - ADS -->
+      <article class="aut-card" data-frente="erica">
+        <div class="aut-mock">
+          <svg viewBox="0 0 320 170">
+            <rect width="320" height="170" rx="6" fill="#fff" stroke="#A78BFA33"/>
+            <text x="14" y="20" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700">Campanhas ativas · 7d</text>
+            <text x="306" y="20" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700" text-anchor="end">ROAS 3.8x</text>
+            <line x1="14" y1="26" x2="306" y2="26" stroke="#E5E7EB"/>
+            <g transform="translate(14,36)">
+              <rect width="292" height="36" rx="5" fill="#FAFBFC" stroke="#E5E7EB"/>
+              <rect width="3" height="36" fill="#4285F4" rx="2"/>
+              <text x="12" y="14" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700">Google · Search</text>
+              <rect x="100" y="6" width="30" height="11" rx="2" fill="#4285F422"/>
+              <text x="115" y="14" font-family="JetBrains Mono" font-size="7" fill="#4285F4" font-weight="700" text-anchor="middle">busca</text>
+              <text x="12" y="28" font-family="Inter" font-size="7" fill="#6B7280">Investido: <tspan font-weight="700" fill="#1B3A4B">R$ 850</tspan></text>
+              <text x="160" y="28" font-family="Inter" font-size="7" fill="#6B7280">Conversões: <tspan font-weight="700" fill="#5FD9B0">12</tspan></text>
+              <text x="280" y="22" font-family="Space Grotesk" font-size="11" fill="#4285F4" font-weight="700" text-anchor="end">↗</text>
+            </g>
+            <g transform="translate(14,78)">
+              <rect width="292" height="36" rx="5" fill="#FAFBFC" stroke="#E5E7EB"/>
+              <rect width="3" height="36" fill="#1877F2" rx="2"/>
+              <text x="12" y="14" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700">Meta · Feed</text>
+              <text x="12" y="28" font-family="Inter" font-size="7" fill="#6B7280">Investido: <tspan font-weight="700" fill="#1B3A4B">R$ 620</tspan></text>
+              <text x="160" y="28" font-family="Inter" font-size="7" fill="#6B7280">Conversões: <tspan font-weight="700" fill="#5FD9B0">18</tspan></text>
+              <text x="280" y="22" font-family="Space Grotesk" font-size="11" fill="#1877F2" font-weight="700" text-anchor="end">↗</text>
+            </g>
+            <g transform="translate(14,120)">
+              <rect width="292" height="36" rx="5" fill="#FAFBFC" stroke="#E5E7EB"/>
+              <rect width="3" height="36" fill="#E1306C" rx="2"/>
+              <text x="12" y="14" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700">Meta · Reels</text>
+              <text x="12" y="28" font-family="Inter" font-size="7" fill="#6B7280">Investido: <tspan font-weight="700" fill="#1B3A4B">R$ 480</tspan></text>
+              <text x="160" y="28" font-family="Inter" font-size="7" fill="#6B7280">Conversões: <tspan font-weight="700" fill="#5FD9B0">9</tspan></text>
+              <text x="280" y="22" font-family="Space Grotesk" font-size="11" fill="#E1306C" font-weight="700" text-anchor="end">↗</text>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Erica</span>
+          <h4>Tráfego pago multi-canal</h4>
+          <p>Setup de Google Ads e Meta com tracking, criativos e relatório semanal. Investimento monitorado, ROAS visível.</p>
+        </div>
+      </article>
+
+      <!-- ERICA - AGENDA -->
+      <article class="aut-card" data-frente="erica">
+        <div class="aut-mock">
+          <svg viewBox="0 0 280 170">
+            <rect x="6" y="6" width="268" height="158" rx="6" fill="#fff" stroke="#A78BFA55"/>
+            <rect x="6" y="6" width="268" height="26" rx="6" fill="#A78BFA"/>
+            <text x="140" y="22" font-family="Space Grotesk" font-size="10" fill="#fff" font-weight="700" text-anchor="middle">MAIO 2026</text>
+            <g transform="translate(12,42)" font-family="JetBrains Mono" font-size="7" fill="#6B7280" font-weight="700">
+              <text x="18" y="0" text-anchor="middle">SEG</text>
+              <text x="55" y="0" text-anchor="middle">TER</text>
+              <text x="92" y="0" text-anchor="middle">QUA</text>
+              <text x="129" y="0" text-anchor="middle">QUI</text>
+              <text x="166" y="0" text-anchor="middle">SEX</text>
+              <text x="203" y="0" text-anchor="middle">SAB</text>
+              <text x="240" y="0" text-anchor="middle">DOM</text>
+            </g>
+            <g transform="translate(12,52)">
+              <text x="18" y="10" font-family="JetBrains Mono" font-size="8" fill="#A78BFA" font-weight="700" text-anchor="middle">3</text>
+              <text x="55" y="10" font-family="JetBrains Mono" font-size="8" fill="#6B7280" text-anchor="middle">4</text>
+              <circle cx="94" cy="8" r="9" fill="#A78BFA22"/>
+              <text x="92" y="10" font-family="JetBrains Mono" font-size="8" fill="#A78BFA" font-weight="700" text-anchor="middle">7</text>
+              <rect x="115" y="-3" width="28" height="18" rx="3" fill="#5FD9B033" stroke="#5FD9B0"/>
+              <text x="129" y="10" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700" text-anchor="middle">14</text>
+              <text x="166" y="10" font-family="JetBrains Mono" font-size="8" fill="#A78BFA" font-weight="700" text-anchor="middle">15</text>
+              <text x="203" y="10" font-family="JetBrains Mono" font-size="8" fill="#6B7280" text-anchor="middle">16</text>
+              <text x="240" y="10" font-family="JetBrains Mono" font-size="8" fill="#6B7280" text-anchor="middle">17</text>
+              <text x="18" y="32" font-family="JetBrains Mono" font-size="8" fill="#A78BFA" font-weight="700" text-anchor="middle">18</text>
+              <text x="55" y="32" font-family="JetBrains Mono" font-size="8" fill="#6B7280" text-anchor="middle">19</text>
+              <text x="92" y="32" font-family="JetBrains Mono" font-size="8" fill="#6B7280" text-anchor="middle">20</text>
+              <text x="129" y="32" font-family="JetBrains Mono" font-size="8" fill="#6B7280" text-anchor="middle">21</text>
+              <text x="166" y="32" font-family="JetBrains Mono" font-size="8" fill="#A78BFA" font-weight="700" text-anchor="middle">22</text>
+            </g>
+            <g transform="translate(12,142)">
+              <rect width="256" height="18" rx="3" fill="#A78BFA10"/>
+              <circle cx="10" cy="9" r="3" fill="#5FD9B0"/>
+              <text x="20" y="12" font-family="Inter" font-size="7" fill="#1B3A4B" font-weight="600">Hoje 14h · Maria S. · Avaliação inicial</text>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Erica</span>
+          <h4>Agendamento online + lembrete</h4>
+          <p>Cliente marca sozinho 24/7, lembrete de WhatsApp em D-1. Reduz no-show e libera o time pra atender.</p>
+        </div>
+      </article>
+
+      <!-- MICHELE - NF -->
+      <article class="aut-card" data-frente="michele">
+        <div class="aut-mock">
+          <svg viewBox="0 0 240 170">
+            <rect x="6" y="6" width="228" height="158" fill="#fff" stroke="#5FD9B055" stroke-width="1.5"/>
+            <rect x="6" y="6" width="228" height="32" fill="#0E1014"/>
+            <text x="14" y="20" font-family="JetBrains Mono" font-size="7" fill="#5FD9B0" font-weight="700">DANFE · NFe</text>
+            <text x="14" y="32" font-family="JetBrains Mono" font-size="9" fill="#fff" font-weight="700">Nº 000.001.234</text>
+            <text x="225" y="20" font-family="JetBrains Mono" font-size="7" fill="#5FD9B0" font-weight="700" text-anchor="end">SÉRIE 1</text>
+            <text x="225" y="32" font-family="Inter" font-size="7" fill="#a8c5e0" text-anchor="end">14/05/2026</text>
+            <text x="14" y="54" font-family="JetBrains Mono" font-size="7" fill="#5FD9B0" font-weight="700">DESTINATÁRIO</text>
+            <line x1="14" y1="58" x2="226" y2="58" stroke="#E5E7EB"/>
+            <text x="14" y="70" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Cliente Praja Ltda</text>
+            <text x="14" y="80" font-family="Inter" font-size="7" fill="#6B7280">CNPJ 12.345.678/0001-90</text>
+            <text x="14" y="98" font-family="JetBrains Mono" font-size="7" fill="#5FD9B0" font-weight="700">ITENS</text>
+            <line x1="14" y1="102" x2="226" y2="102" stroke="#E5E7EB"/>
+            <text x="14" y="114" font-family="Inter" font-size="7" fill="#1B3A4B">Serviço · NCM 9999</text>
+            <text x="226" y="114" font-family="JetBrains Mono" font-size="7" fill="#1B3A4B" text-anchor="end">R$ 4.200,00</text>
+            <text x="14" y="124" font-family="Inter" font-size="7" fill="#1B3A4B">Manutenção · CFOP 5933</text>
+            <text x="226" y="124" font-family="JetBrains Mono" font-size="7" fill="#1B3A4B" text-anchor="end">R$ 1.800,00</text>
+            <line x1="14" y1="136" x2="226" y2="136" stroke="#5FD9B033"/>
+            <text x="14" y="150" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700">TOTAL</text>
+            <text x="226" y="150" font-family="Space Grotesk" font-size="11" fill="#5FD9B0" font-weight="700" text-anchor="end">R$ 6.000,00</text>
+            <g transform="translate(170,98)">
+              <rect width="50" height="14" rx="3" fill="#5FD9B022"/>
+              <text x="25" y="10" font-family="JetBrains Mono" font-size="6" fill="#5FD9B0" font-weight="700" text-anchor="middle">✓ AUTORIZADA</text>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Michele</span>
+          <h4>Emissor NF-e automatizado</h4>
+          <p>Validação prévia para evitar rejeição, NF-e sai sem erro, DANFE auto-anexada e enviada ao cliente.</p>
+        </div>
+      </article>
+
+      <!-- MICHELE - TABELA -->
+      <article class="aut-card" data-frente="michele">
+        <div class="aut-mock">
+          <svg viewBox="0 0 320 170">
+            <rect width="320" height="170" rx="6" fill="#fff" stroke="#5FD9B033"/>
+            <rect width="320" height="22" fill="#5FD9B015"/>
+            <text x="10" y="15" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700">PRODUTO</text>
+            <text x="120" y="15" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700">NCM</text>
+            <text x="180" y="15" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700">CFOP</text>
+            <text x="230" y="15" font-family="JetBrains Mono" font-size="8" fill="#5FD9B0" font-weight="700">STATUS</text>
+            <rect y="28" width="320" height="22" fill="#fff"/>
+            <text x="10" y="42" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Item #1000</text>
+            <text x="120" y="42" font-family="JetBrains Mono" font-size="8" fill="#6B7280">8471.30.10</text>
+            <text x="180" y="42" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5102</text>
+            <text x="230" y="42" font-family="Inter" font-size="8" fill="#5FD9B0" font-weight="700">✓ OK</text>
+            <rect y="51" width="320" height="22" fill="#FAFBFC"/>
+            <text x="10" y="65" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Item #1007</text>
+            <text x="120" y="65" font-family="JetBrains Mono" font-size="8" fill="#6B7280">8471.31.10</text>
+            <text x="180" y="65" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5103</text>
+            <text x="230" y="65" font-family="Inter" font-size="8" fill="#5FD9B0" font-weight="700">✓ OK</text>
+            <rect y="74" width="320" height="22" fill="#fff"/>
+            <text x="10" y="88" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Item #1014</text>
+            <text x="120" y="88" font-family="JetBrains Mono" font-size="8" fill="#6B7280">8471.32.10</text>
+            <text x="180" y="88" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5104</text>
+            <text x="230" y="88" font-family="Inter" font-size="8" fill="#5FD9B0" font-weight="700">✓ OK</text>
+            <rect y="97" width="320" height="22" fill="#FAFBFC"/>
+            <text x="10" y="111" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Item #1021</text>
+            <text x="120" y="111" font-family="JetBrains Mono" font-size="8" fill="#6B7280">8471.33.10</text>
+            <text x="180" y="111" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5105</text>
+            <text x="230" y="111" font-family="Inter" font-size="8" fill="#F97316" font-weight="700">⚠ Revisar</text>
+            <rect y="120" width="320" height="22" fill="#fff"/>
+            <text x="10" y="134" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Item #1028</text>
+            <text x="120" y="134" font-family="JetBrains Mono" font-size="8" fill="#6B7280">8471.34.10</text>
+            <text x="180" y="134" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5106</text>
+            <text x="230" y="134" font-family="Inter" font-size="8" fill="#5FD9B0" font-weight="700">✓ OK</text>
+            <rect y="143" width="320" height="22" fill="#FAFBFC"/>
+            <text x="10" y="157" font-family="Inter" font-size="8" fill="#1B3A4B" font-weight="600">Item #1035</text>
+            <text x="120" y="157" font-family="JetBrains Mono" font-size="8" fill="#6B7280">8471.35.10</text>
+            <text x="180" y="157" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5107</text>
+            <text x="230" y="157" font-family="Inter" font-size="8" fill="#5FD9B0" font-weight="700">✓ OK</text>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Michele</span>
+          <h4>Revisão NCM/CFOP completa</h4>
+          <p>Auditoria de classificação fiscal item-a-item. Recupera imposto pago a mais e evita autuação retroativa.</p>
+        </div>
+      </article>
+
+      <!-- MICHELE - PIPELINE -->
+      <article class="aut-card" data-frente="michele">
+        <div class="aut-mock">
+          <svg viewBox="0 0 320 170">
+            <rect width="320" height="170" rx="6" fill="#fff" stroke="#5FD9B033"/>
+            <text x="14" y="20" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700">Esteira automatizada</text>
+            <line x1="14" y1="26" x2="306" y2="26" stroke="#E5E7EB"/>
+            <g transform="translate(14,42)">
+              <rect width="64" height="80" rx="6" fill="#5FD9B010" stroke="#5FD9B055"/>
+              <circle cx="32" cy="22" r="14" fill="#5FD9B033"/>
+              <text x="32" y="27" font-size="12" text-anchor="middle">📝</text>
+              <text x="32" y="56" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700" text-anchor="middle">Requisição</text>
+              <text x="32" y="68" font-family="JetBrains Mono" font-size="6" fill="#9CA3AF" text-anchor="middle">etapa 1</text>
+            </g>
+            <line x1="78" y1="82" x2="89" y2="82" stroke="#5FD9B077" stroke-width="2" stroke-dasharray="2,2"/>
+            <path d="M 88 78 L 92 82 L 88 86 Z" fill="#5FD9B0"/>
+            <g transform="translate(90,42)">
+              <rect width="64" height="80" rx="6" fill="#5FD9B010" stroke="#5FD9B055"/>
+              <circle cx="32" cy="22" r="14" fill="#5FD9B033"/>
+              <text x="32" y="27" font-size="12" text-anchor="middle">💰</text>
+              <text x="32" y="56" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700" text-anchor="middle">Cotação 3+</text>
+              <text x="32" y="68" font-family="JetBrains Mono" font-size="6" fill="#9CA3AF" text-anchor="middle">etapa 2</text>
+            </g>
+            <line x1="154" y1="82" x2="165" y2="82" stroke="#5FD9B077" stroke-width="2" stroke-dasharray="2,2"/>
+            <path d="M 164 78 L 168 82 L 164 86 Z" fill="#5FD9B0"/>
+            <g transform="translate(166,42)">
+              <rect width="64" height="80" rx="6" fill="#FFD16610" stroke="#FFD16655"/>
+              <circle cx="32" cy="22" r="14" fill="#FFD16633"/>
+              <text x="32" y="27" font-size="12" text-anchor="middle">✓</text>
+              <text x="32" y="56" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700" text-anchor="middle">Aprovação</text>
+              <text x="32" y="68" font-family="JetBrains Mono" font-size="6" fill="#9CA3AF" text-anchor="middle">etapa 3</text>
+            </g>
+            <line x1="230" y1="82" x2="241" y2="82" stroke="#5FD9B077" stroke-width="2" stroke-dasharray="2,2"/>
+            <path d="M 240 78 L 244 82 L 240 86 Z" fill="#5FD9B0"/>
+            <g transform="translate(242,42)">
+              <rect width="64" height="80" rx="6" fill="#A78BFA10" stroke="#A78BFA55"/>
+              <circle cx="32" cy="22" r="14" fill="#A78BFA33"/>
+              <text x="32" y="27" font-size="12" text-anchor="middle">📦</text>
+              <text x="32" y="56" font-family="Space Grotesk" font-size="9" fill="#1B3A4B" font-weight="700" text-anchor="middle">Pedido</text>
+              <text x="32" y="68" font-family="JetBrains Mono" font-size="6" fill="#9CA3AF" text-anchor="middle">etapa 4</text>
+            </g>
+            <g transform="translate(14,134)">
+              <rect width="292" height="22" rx="4" fill="#5FD9B010"/>
+              <text x="10" y="14" font-family="JetBrains Mono" font-size="7" fill="#5FD9B0" font-weight="700">SISTEMA</text>
+              <text x="50" y="14" font-family="Inter" font-size="8" fill="#1B3A4B">Última cotação fechada em 2h · sem intervenção manual</text>
+            </g>
+          </svg>
+        </div>
+        <div class="aut-body">
+          <span class="aut-frente">Frente Michele</span>
+          <h4>Esteira de Compras (cotação 3+)</h4>
+          <p>Requisição → cotação automática → homologação fornecedor. Compliance, transparência e velocidade.</p>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="aut-cta reveal">
+      <div class="aut-cta-text">
+        Não achou o que procurava?<br/>
+        <span style="color: var(--cyan);">A gente desenha sob medida.</span>
+      </div>
+      <a href="#contato" class="btn btn-primary btn-lg">Conversar sobre sua operação <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════ COMO TRABALHAMOS ═════════════════ -->
+<section id="processo">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Processo</span>
+      <h2>Como trabalhamos.</h2>
+      <p>Sem PowerPoint genérico, sem proposta de 40 páginas que ninguém lê. Três etapas claras do "olá" ao kick-off.</p>
+    </div>
+
+    <div class="steps-grid reveal-stagger">
+      <div class="step-item">
+        <span class="step-num">01 / Conversa</span>
+        <h3>Diagnóstico aberto</h3>
+        <p>Call de 30-45 min onde você conta o contexto e a gente apresenta o que já estudou da sua operação. Sem promessa de venda.</p>
+        <div class="step-time">30-45 min</div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">02 / Proposta</span>
+        <h3>Escopo refinado</h3>
+        <p>Em até 2 dias úteis depois da call: escopo detalhado, KPIs combinados, prazos claros e investimento total. Direto ao ponto.</p>
+        <div class="step-time">2 dias úteis</div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">03 / Kick-off</span>
+        <h3>Mãos na operação</h3>
+        <p>Se fizer sentido pra todo mundo, primeira entrega em até 2 semanas. Se não fizer, a gente para - sem fricção, sem ressentimento.</p>
+        <div class="step-time">5 dias após aceite</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════ COMO ESCOLHEMOS / SOBRE ═════════════════ -->
+<section id="sobre">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Sobre - como escolhemos</span>
+      <h2>A gente não trabalha com qualquer cliente.</h2>
+      <p>Escolha consciente de manter o squad pequeno e focado. Por isso filtramos antes de propor - pra dar a atenção real que a operação merece, com método e profundidade.</p>
+    </div>
+
+    <div class="criterios reveal">
+      <div>
+        <ul class="crit-list">
+          <li><span class="crit-icon">✓</span> <span><strong>PME de 5-50 funcionários</strong> - empresas que já saíram do CNPJ pessoa-física mas não viraram corporação</span></li>
+          <li><span class="crit-icon">✓</span> <span><strong>Tem ERP de gestão</strong> - não importa qual; nossa expertise técnica permite trabalhar em cima do que vocês já operam</span></li>
+          <li><span class="crit-icon">✓</span> <span><strong>Topa mapear o processo</strong> - não vendemos automação cega; começamos sempre pelo diagnóstico real</span></li>
+          <li><span class="crit-icon">✓</span> <span><strong>Aceita medir resultado</strong> - KPI combinado na largada; bate ou a gente revisa</span></li>
+          <li><span class="crit-icon">✓</span> <span><strong>Quer profissionalizar</strong> - não está procurando tapa-buraco emergencial</span></li>
+          <li><span class="crit-icon">✓</span> <span><strong>Aceita NDA + LGPD</strong> - entrada formal antes de qualquer dado sensível</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-size: 28px; margin-bottom: 18px; font-family: 'Space Grotesk', sans-serif; line-height: 1.25; letter-spacing: -0.015em; color: var(--ink-0); font-weight: 600;">
+          A Praja nasceu da inquietação<br/>
+          de três operadoras que viram<br/>
+          PMEs sendo tratadas como<br/>
+          <span style="color: var(--mint); font-style: italic; font-weight: 500;">projeto de portfólio.</span>
+        </h3>
+        <p style="font-size: 14.5px; line-height: 1.7;">A gente queria fazer diferente: squad pequeno, metodologia clara, especialização real. Cada projeto é tocado pelas sócias da frente que faz sentido - sem analista júnior cobrando hora de pleno, sem agência intermediária.</p>
+        <p style="font-size: 14.5px; line-height: 1.7;">Do Rio de Janeiro, atendemos PMEs do Brasil. Estamos no início da jornada como Praja - mas as 3 sócias somam anos de operação real em finanças, fiscal e atendimento. A novidade é o squad. A bagagem, não.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════ CTA + CONTATO ═════════════════ -->
+<section class="contato-section" id="contato">
+  <div class="container">
+    <div class="contato-grid">
+      <div class="contato-pitch reveal">
+        <span class="eyebrow">Vamos conversar</span>
+        <h2>Conversa de 30 minutos.<br/><span class="accent">Se não fizer sentido, nada feito.</span></h2>
+        <p style="font-size: 16px;">Conta um pouco do contexto da sua operação. A gente já chega na call com algumas hipóteses pra discutir - não com slide genérico de venda.</p>
+
+        <div class="contato-info">
+          <span class="eyebrow" style="color: var(--mint);">- ou direto pelos canais</span>
+          <div class="contato-canais">
+            <a class="canal-item" href="https://wa.me/5522999999999" target="_blank" rel="noopener">
+              <div class="canal-icon">📱</div>
+              <div class="canal-text">
+                <strong>WhatsApp</strong>
+                <small>Resposta em até 4h em dia útil</small>
+              </div>
+            </a>
+            <a class="canal-item" href="mailto:contato@prajaconecta.com.br">
+              <div class="canal-icon">📧</div>
+              <div class="canal-text">
+                <strong>contato@prajaconecta.com.br</strong>
+                <small>Resposta em até 1 dia útil</small>
+              </div>
+            </a>
+            <a class="canal-item" href="https://linkedin.com/company/praja-conecta" target="_blank" rel="noopener">
+              <div class="canal-icon">💼</div>
+              <div class="canal-text">
+                <strong>LinkedIn</strong>
+                <small>Atualizações sobre o que estamos fazendo</small>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <form class="contato-form reveal" id="formContato" onsubmit="enviarContato(event)" novalidate>
+        <div class="form-eyebrow">Diagnóstico estruturado</div>
+        <div class="form-title">3 passos pra a gente já chegar na call com contexto.</div>
+
+        <!-- PROGRESS BAR -->
+        <div class="form-progress">
+          <div class="form-progress-step active" data-step="1"></div>
+          <div class="form-progress-step" data-step="2"></div>
+          <div class="form-progress-step" data-step="3"></div>
+        </div>
+
+        <!-- PASSO 1: VOCÊ -->
+        <div class="form-step active" data-step="1">
+          <div class="form-step-num">01 · Quem é você</div>
+
+          <div class="form-row">
+            <label for="nome">Seu nome</label>
+            <input type="text" id="nome" name="nome" placeholder="Como devemos te chamar" required>
+          </div>
+
+          <div class="form-row">
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" name="empresa" placeholder="Nome do seu negócio" required>
+          </div>
+
+          <div class="form-row">
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" name="cidade" placeholder="Onde a empresa opera">
+          </div>
+
+          <div class="form-row">
+            <label for="form-contato">WhatsApp ou e-mail</label>
+            <input type="text" id="form-contato" name="contato" placeholder="Onde a gente te encontra" required>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-step-next" onclick="proxStep(1)">Continuar →</button>
+          </div>
+        </div>
+
+        <!-- PASSO 2: OPERAÇÃO -->
+        <div class="form-step" data-step="2">
+          <div class="form-step-num">02 · Como é sua operação</div>
+
+          <div class="form-row">
+            <label for="setor">Setor / Segmento</label>
+            <select id="setor" name="setor" style="width:100%;background:var(--bg-0);border:1px solid var(--line);border-radius:var(--radius-s);padding:12px 14px;color:var(--ink-0);font-family:'Inter',sans-serif;font-size:14px;outline:none;cursor:pointer;">
+              <option value="">Selecione...</option>
+              <option value="servicos_b2b">Serviços B2B</option>
+              <option value="varejo">Varejo</option>
+              <option value="ecommerce">E-commerce</option>
+              <option value="industria_pequena">Indústria pequena</option>
+              <option value="imobiliario">Imobiliário</option>
+              <option value="construcao">Construção</option>
+              <option value="saude_privada">Saúde / Clínica</option>
+              <option value="educacao_privada">Educação privada</option>
+              <option value="beleza">Beleza / Estética</option>
+              <option value="fitness">Fitness / Academia</option>
+              <option value="alimentacao">Alimentação / Restaurante</option>
+              <option value="turismo">Turismo / Hotelaria</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Tamanho da empresa</label>
+            <div class="opt-grid cols-3">
+              <div class="opt-card" data-name="tamanho" data-value="1-5">
+                <div class="opt-titulo">1-5</div>
+                <div class="opt-desc">funcionários</div>
+                <div class="opt-check"></div>
+              </div>
+              <div class="opt-card" data-name="tamanho" data-value="6-15">
+                <div class="opt-titulo">6-15</div>
+                <div class="opt-desc">funcionários</div>
+                <div class="opt-check"></div>
+              </div>
+              <div class="opt-card" data-name="tamanho" data-value="16-50">
+                <div class="opt-titulo">16-50</div>
+                <div class="opt-desc">funcionários</div>
+                <div class="opt-check"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Vocês usam algum ERP de gestão?</label>
+            <div class="opt-grid cols-3">
+              <div class="opt-card" data-name="tem_erp" data-value="sim">
+                <div class="opt-titulo">Sim</div>
+                <div class="opt-desc">Já temos</div>
+                <div class="opt-check"></div>
+              </div>
+              <div class="opt-card" data-name="tem_erp" data-value="planejando">
+                <div class="opt-titulo">Planejando</div>
+                <div class="opt-desc">Em busca</div>
+                <div class="opt-check"></div>
+              </div>
+              <div class="opt-card" data-name="tem_erp" data-value="nao">
+                <div class="opt-titulo">Não</div>
+                <div class="opt-desc">Planilhas</div>
+                <div class="opt-check"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Quais frentes te incomodam hoje? <span style="color:var(--ink-3);font-weight:500;text-transform:none;letter-spacing:0;">(marque uma ou mais)</span></label>
+            <div class="opt-grid cols-3">
+              <div class="opt-card multi" data-name="area" data-value="cibele">
+                <span class="opt-emoji">💰</span>
+                <div class="opt-titulo">Financeiro</div>
+                <div class="opt-desc">Caixa, cobrança, conciliação</div>
+                <div class="opt-check"></div>
+              </div>
+              <div class="opt-card multi" data-name="area" data-value="erica">
+                <span class="opt-emoji">🎯</span>
+                <div class="opt-titulo">UX · CS · Tráfego</div>
+                <div class="opt-desc">Site, atendimento, captação</div>
+                <div class="opt-check"></div>
+              </div>
+              <div class="opt-card multi" data-name="area" data-value="michele">
+                <span class="opt-emoji">⚙️</span>
+                <div class="opt-titulo">Fiscal · Estoque · Compras</div>
+                <div class="opt-desc">NF-e, classificação, ERP</div>
+                <div class="opt-check"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-step-prev" onclick="voltarStep(2)">← Voltar</button>
+            <button type="button" class="btn-step-next" onclick="proxStep(2)">Continuar →</button>
+          </div>
+        </div>
+
+        <!-- PASSO 3: AUTOMAÇÕES -->
+        <div class="form-step" data-step="3">
+          <div class="form-step-num">03 · O que ressoa pra vocês</div>
+
+          <p style="font-size:13px;color:var(--ink-2);line-height:1.55;margin-bottom:16px;margin-top:8px;">
+            Marque as automações que parecem fazer sentido pra sua operação. <strong style="color:var(--ink-1);">Não tem certo ou errado</strong> &mdash; é só pra a gente chegar na call com hipóteses concretas.
+          </p>
+
+          <div class="aut-pick-grid" id="autPickGrid">
+            <div class="aut-empty">Carregando catálogo...</div>
+          </div>
+
+          <div class="form-row">
+            <label for="dor">Tem algo que não tá na lista? Conta aqui.</label>
+            <textarea id="dor" name="dor" placeholder="Opcional — contexto, dores específicas, prioridades..." style="min-height:80px;"></textarea>
+          </div>
+
+          <div class="step-resumo" id="stepResumo" style="display:none;">
+            <div id="stepResumoText"></div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-step-prev" onclick="voltarStep(3)">← Voltar</button>
+            <button type="submit" class="form-submit" id="formSubmitBtn">Enviar e marcar conversa →</button>
+          </div>
+        </div>
+
+        <div class="form-feedback" id="formFeedback">
+          ✓ Recebido. A gente responde em até 1 dia útil pelo canal que você indicou.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═════════════════ FOOTER ═════════════════ -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <svg class="glifo" viewBox="0 0 60 16" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(30, 8)">
+          <circle cy="0" r="2" fill="#7BBFFF" opacity="0.8">
+            <animate attributeName="cx" values="-24; -14; -24" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          </circle>
+          <rect y="-0.75" height="1.5" fill="#7BBFFF" opacity="0.4">
+            <animate attributeName="x" values="-24; -14; -24" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+            <animate attributeName="width" values="20; 10; 20" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          </rect>
+          
+          <circle cx="0" cy="0" r="6" fill="#5FD9B0" opacity="0.3">
+            <animate attributeName="r" values="4.5; 7; 4.5" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+            <animate attributeName="opacity" values="0.2; 0.6; 0.2" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          </circle>
+          <circle cx="0" cy="0" r="3" fill="#5FD9B0"/>
+          
+          <rect y="-0.75" height="1.5" fill="#7BBFFF" opacity="0.4">
+            <animate attributeName="x" values="4; 4; 4" dur="2.5s" repeatCount="indefinite" />
+            <animate attributeName="width" values="20; 10; 20" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          </rect>
+          <circle cy="0" r="2" fill="#7BBFFF" opacity="0.8">
+            <animate attributeName="cx" values="24; 14; 24" dur="2.5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0; 0.5; 1"/>
+          </circle>
+        </g>
+      </svg>
+      <div class="name">praja conecta</div>
+      <div class="tag">automação · processos · eficiência</div>
+    </div>
+
+    <div class="footer-cidades">
+      <div class="footer-cidades-title">Base</div>
+      <div class="cidade-list">
+        <span>Rio de Janeiro · RJ</span>
+        <span>Atendimento Brasil ↗</span>
+      </div>
+      <div style="font-size: 11.5px; color: var(--ink-3); margin-top: 14px; line-height: 1.6; max-width: 320px;">
+        Operação remota com calls + mapeamento presencial sob demanda em RJ e cidades atendidas.
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <a href="#manifesto">Manifesto</a>
+      <a href="#socias">Sócias</a>
+      <a href="#automacoes">Automações</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#contato">Contato</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div>© 2026 PRAJA CONECTA · CNPJ XX.XXX.XXX/0001-XX</div>
+    <div>BUILT IN RIO DE JANEIRO · BRASIL</div>
+  </div>
+</footer>
+
+<!-- Bibliotecas Premium -->
+<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+// ═════════════════════════════════════════════════════
+// HANDLER DE ERRO GLOBAL — mostra problemas visualmente
+// ═════════════════════════════════════════════════════
+window.addEventListener('error', (ev) => {
+  console.error('[Praja Site] Erro:', ev.error || ev.message);
+});
+
+// ═════════════════════════════════════════════════════
+// STIPPLE LANDSCAPE — paisagem pontilhada inspirada em dotwork art
+// Performance: paisagem renderizada UMA VEZ em offscreen canvas,
+// só ~25 pontos animam por cima (pulse sutil)
+// ═════════════════════════════════════════════════════
+function bootFallingDots(){
+  const canvas = document.getElementById('heroFalling');
+  if (!canvas) { console.warn('[Stipple] canvas não encontrado'); return; }
+  const parent = canvas.parentElement;
+  if (!parent) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    canvas.style.display = 'none';
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  // Cores: tom único elegante (cyan claro) com variação sutil de opacidade
+  // Stippling clássico usa uma cor só — aqui usamos cyan/branco
+  const COLORS = [
+    [255, 255, 255],   // branco (60%)
+    [173, 210, 250],   // cyan claro
+    [123, 191, 255],   // cyan
+    [180, 240, 215],   // mint claro
+  ];
+
+  let W = 0, H = 0;
+  let bgCanvas = null;      // offscreen: paisagem renderizada uma vez
+  let pulsers = [];         // 25 pontos que pulsam por cima
+  let running = true;
+
+  // ─── Curva orgânica de montanhas: 3 picos definidos + ruído leve ───
+  // Inspirada na imagem-referência: 1 pico central alto, 2 picos laterais menores
+  function terrainHeight(x){
+    // Picos: { x normalizado, altura normalizada (0 = topo, 1 = base) }
+    const peaks = [
+      { x: 0.15, h: 0.55 },
+      { x: 0.32, h: 0.28 },   // pico central — mais alto
+      { x: 0.48, h: 0.45 },
+      { x: 0.62, h: 0.35 },   // segundo pico
+      { x: 0.78, h: 0.50 },
+      { x: 0.92, h: 0.62 },
+    ];
+    const xN = x / W;
+    let height = H * 0.95;   // base
+
+    // Cada pico "puxa" a curva pra cima dentro da sua zona de influência (gaussiano)
+    for (const p of peaks) {
+      const dist = Math.abs(xN - p.x);
+      const influence = Math.exp(-(dist * dist) / 0.012);
+      const peakY = H * p.h;
+      height = height + (peakY - height) * influence;
+    }
+
+    // Ruído leve pra evitar curva limpa demais
+    height += Math.sin(x * 0.025 + 1.3) * 4;
+    height += Math.sin(x * 0.011 + 4.7) * 7;
+    height += Math.sin(x * 0.052 + 2.9) * 2;
+
+    return height;
+  }
+
+  // ─── Gera paisagem stippling em offscreen canvas (1x) ───
+  function generateLandscape(){
+    bgCanvas = document.createElement('canvas');
+    bgCanvas.width = Math.round(W * dpr);
+    bgCanvas.height = Math.round(H * dpr);
+    const bgCtx = bgCanvas.getContext('2d');
+    bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Pré-calcula terreno por coluna
+    const terrain = new Float32Array(Math.ceil(W));
+    for (let x = 0; x < W; x++) terrain[x] = terrainHeight(x);
+
+    // Densidade total — ajustada pra ficar denso mas não saturar
+    const totalAttempts = Math.floor(W * H * 0.06);
+
+    for (let i = 0; i < totalAttempts; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const surface = terrain[Math.min(terrain.length - 1, Math.floor(x))];
+
+      // Probabilidade de aceitar esse ponto:
+      //   - DENTRO da montanha (y > surface): muito alta na superfície, decai pra baixo
+      //   - ACIMA da montanha: cai exponencialmente com a distância
+      let prob = 0;
+      if (y >= surface) {
+        // Profundidade normalizada (0 = superfície, 1 = base)
+        const depth = (y - surface) / Math.max(1, H - surface);
+        // Densidade alta perto da superfície, dissipa suavemente
+        prob = 0.92 * Math.pow(1 - depth, 0.6) * (0.5 + Math.random() * 0.5);
+      } else {
+        // Halo de pontos esparsos acima da silhueta
+        const distAbove = surface - y;
+        prob = Math.exp(-distAbove * 0.05) * 0.25;
+      }
+
+      if (Math.random() < prob) {
+        // Cor: 60% branco, resto distribuído
+        const c = Math.random() < 0.6
+          ? COLORS[0]
+          : COLORS[1 + Math.floor(Math.random() * (COLORS.length - 1))];
+
+        // Tamanho: 92% pequeno (1px), 8% médio (1.5px)
+        const size = Math.random() < 0.92 ? 0.7 : 1.4;
+        // Opacidade variável
+        const op = 0.3 + Math.random() * 0.55;
+
+        bgCtx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${op})`;
+        bgCtx.beginPath();
+        bgCtx.arc(x, y, size, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+    }
+
+    // Adiciona alguns "destaques" no cume das montanhas — pontos um pouco maiores
+    for (let x = 0; x < W; x += 3) {
+      const surface = terrain[Math.min(terrain.length - 1, Math.floor(x))];
+      if (Math.random() < 0.25) {
+        bgCtx.fillStyle = 'rgba(123, 191, 255, 0.7)';
+        bgCtx.beginPath();
+        bgCtx.arc(x + (Math.random() - 0.5) * 2, surface + Math.random() * 3, 0.9, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+    }
+
+    // Salva terrain pra usar nos pulsers
+    bgCanvas._terrain = terrain;
+  }
+
+  // ─── Cria os 25 pontos que pulsam por cima da paisagem ───
+  function initPulsers(){
+    pulsers = [];
+    const terrain = bgCanvas._terrain;
+    const count = W < 720 ? 18 : 30;
+
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * W;
+      const surface = terrain[Math.min(terrain.length - 1, Math.floor(x))];
+      // 70% na linha do cume (acentua a silhueta), 30% no céu
+      const onSurface = Math.random() < 0.7;
+      const y = onSurface
+        ? surface + Math.random() * 5 - 2
+        : surface - 20 - Math.random() * 100;
+
+      pulsers.push({
+        x: x,
+        y: y,
+        size: 1.4 + Math.random() * 1.2,
+        baseOp: 0.5 + Math.random() * 0.4,
+        pulseSpeed: 0.015 + Math.random() * 0.025,
+        pulsePhase: Math.random() * Math.PI * 2,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      });
+    }
+  }
+
+  function resize(){
+    const rect = parent.getBoundingClientRect();
+    W = Math.max(rect.width, 1);
+    H = Math.max(rect.height, window.innerHeight, 1);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    generateLandscape();
+    initPulsers();
+    console.log(`[Stipple] ${W}x${H} · ${pulsers.length} pulsers`);
+  }
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let targetMouseX = mouseX;
+  let targetMouseY = mouseY;
+
+  document.addEventListener('mousemove', (e) => {
+    targetMouseX = e.clientX;
+    targetMouseY = e.clientY;
+  });
+
+  let last = performance.now();
+  function tick(now){
+    if (!running) { requestAnimationFrame(tick); return; }
+    const dt = Math.min((now - last) / 16.67, 3);
+    last = now;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Smooth mouse interpolation
+    mouseX += (targetMouseX - mouseX) * 0.08;
+    mouseY += (targetMouseY - mouseY) * 0.08;
+
+    // 1. Paisagem stippling com Parallax sutil
+    if (bgCanvas) {
+      const offsetX = (mouseX - W / 2) * -0.03;
+      const offsetY = (mouseY - H / 2) * -0.03;
+      
+      // Desenhar paisagem com offset
+      ctx.drawImage(bgCanvas, offsetX, offsetY, W, H);
+      
+      // 1.5. Efeito de Iluminação (Glow) interativo
+      ctx.globalCompositeOperation = 'lighter';
+      const grad = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 250);
+      grad.addColorStop(0, 'rgba(123, 191, 255, 0.12)');
+      grad.addColorStop(0.5, 'rgba(123, 191, 255, 0.03)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    // 2. Pulsers por cima
+    for (let i = 0; i < pulsers.length; i++) {
+      const p = pulsers[i];
+      p.pulsePhase += p.pulseSpeed * dt;
+      const op = p.baseOp * (0.2 + (Math.sin(p.pulsePhase) * 0.5 + 0.5) * 0.8);
+
+      ctx.fillStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},${op})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    running = !document.hidden;
+    if (running) last = performance.now();
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);
+  });
+
+  resize();
+  requestAnimationFrame(tick);
+
+  // Re-gera após 600ms caso o layout ainda esteja se ajustando
+  setTimeout(resize, 600);
+}
+
+// Boot com retry — DOMContentLoaded ou já carregado
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootFallingDots);
+} else {
+  bootFallingDots();
+}
+
+// ═════════════════════════════════════════════════════
+// SMOOTH SCROLL (LENIS) + INTERCEPTAÇÃO DE ANCHOR LINKS
+// Resiliente: se o CDN não carregar, usa scroll nativo
+// ═════════════════════════════════════════════════════
+let lenis = null;
+try {
+  if (typeof Lenis !== 'undefined') {
+    lenis = new Lenis({
+      autoRaf: true,
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+    });
+  }
+} catch (e) { console.warn('[Praja] Lenis não carregou, usando scroll nativo:', e.message); }
+
+// Intercepta anchor links — funciona com ou sem Lenis
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[href^="#"]');
+  if (!link) return;
+  const id = link.getAttribute('href');
+  if (id === '#' || id.length < 2) return;
+  const alvo = document.querySelector(id);
+  if (!alvo) return;
+  e.preventDefault();
+  if (lenis) {
+    lenis.scrollTo(alvo, { offset: -64, duration: 1.2 });
+  } else {
+    // Fallback: scroll nativo com offset manual
+    const y = alvo.getBoundingClientRect().top + window.scrollY - 64;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+});
+
+// ═════════════════════════════════════════════════════
+// CUSTOM CURSOR
+// ═════════════════════════════════════════════════════
+const cursor = document.querySelector('.custom-cursor');
+const follower = document.querySelector('.custom-cursor-follower');
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let followerX = mouseX;
+let followerY = mouseY;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  if(cursor) {
+    cursor.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+  }
+});
+
+if (typeof gsap !== 'undefined') {
+  gsap.ticker.add(() => {
+    followerX += (mouseX - followerX) * 0.15;
+    followerY += (mouseY - followerY) * 0.15;
+    if(follower) {
+      follower.style.transform = `translate(${followerX}px, ${followerY}px) translate(-50%, -50%)`;
+    }
+  });
+} else {
+  console.warn('[Praja] GSAP não carregou, animação do cursor desabilitada');
+}
+
+document.querySelectorAll('a, button, .aut-tab, .canal-item').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    if(cursor) cursor.classList.add('active');
+    if(follower) follower.classList.add('active');
+  });
+  el.addEventListener('mouseleave', () => {
+    if(cursor) cursor.classList.remove('active');
+    if(follower) follower.classList.remove('active');
+  });
+});
+
+// ═════════════════════════════════════════════════════
+// THREE.JS PARTICLE MESH BACKGROUND
+// ═════════════════════════════════════════════════════
+const initThreeJS = () => {
+  const container = document.getElementById('canvas-container');
+  if(!container) return;
+  if(typeof THREE === 'undefined') { console.warn('[Praja] Three.js não carregou, fundo desabilitado'); return; }
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  // Particles
+  const particlesGeometry = new THREE.BufferGeometry();
+  const particlesCount = window.innerWidth < 768 ? 400 : 900;
+  const posArray = new Float32Array(particlesCount * 3);
+
+  for(let i = 0; i < particlesCount * 3; i++) {
+    posArray[i] = (Math.random() - 0.5) * 12; // Spread
+  }
+
+  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+  const particlesMaterial = new THREE.PointsMaterial({
+    size: 0.012,
+    color: 0x7BBFFF,
+    transparent: true,
+    opacity: 0.45,
+    blending: THREE.AdditiveBlending
+  });
+
+  const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+  scene.add(particlesMesh);
+
+  camera.position.z = 3;
+
+  // Mouse interaction
+  let tgMouseX = 0;
+  let tgMouseY = 0;
+  const windowHalfX = window.innerWidth / 2;
+  const windowHalfY = window.innerHeight / 2;
+
+  document.addEventListener('mousemove', (event) => {
+    tgMouseX = (event.clientX - windowHalfX) * 0.001;
+    tgMouseY = (event.clientY - windowHalfY) * 0.001;
+  });
+
+  const clock = new THREE.Clock();
+
+  const animate = () => {
+    requestAnimationFrame(animate);
+    const elapsedTime = clock.getElapsedTime();
+
+    particlesMesh.rotation.y += 0.0003;
+    particlesMesh.rotation.x += 0.0001;
+
+    // Fluid movement
+    const positions = particlesMesh.geometry.attributes.position.array;
+    for(let i = 0; i < particlesCount; i++) {
+      const i3 = i * 3;
+      positions[i3 + 1] += Math.sin(elapsedTime + positions[i3]) * 0.0015;
+    }
+    particlesMesh.geometry.attributes.position.needsUpdate = true;
+
+    // Mouse parallax
+    particlesMesh.position.x += (tgMouseX - particlesMesh.position.x) * 0.05;
+    particlesMesh.position.y += (-tgMouseY - particlesMesh.position.y) * 0.05;
+
+    renderer.render(scene, camera);
+  };
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+};
+initThreeJS();
+
+// ═════════════════════════════════════════════════════
+// GSAP SCROLL ANIMATIONS
+// ═════════════════════════════════════════════════════
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero animations
+gsap.fromTo('.hero h1', 
+  { y: 50, opacity: 0, autoAlpha: 0 }, 
+  { y: 0, opacity: 1, autoAlpha: 1, duration: 1.2, ease: "power3.out", delay: 0.2 }
+);
+gsap.fromTo('.hero-sub', 
+  { y: 30, opacity: 0, autoAlpha: 0 }, 
+  { y: 0, opacity: 1, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.4 }
+);
+gsap.fromTo('.hero-cta', 
+  { y: 30, opacity: 0, autoAlpha: 0 }, 
+  { y: 0, opacity: 1, autoAlpha: 1, duration: 1, ease: "power3.out", delay: 0.6 }
+);
+gsap.fromTo('.hero-pillars .hero-pillar', 
+  { y: 20, opacity: 0, autoAlpha: 0 }, 
+  { y: 0, opacity: 1, autoAlpha: 1, duration: 0.8, stagger: 0.1, ease: "power2.out", delay: 0.8 }
+);
+
+// Generic Reveal
+gsap.utils.toArray('.reveal').forEach(elem => {
+  gsap.fromTo(elem, 
+    { y: 40, opacity: 0, autoAlpha: 0 },
+    {
+      y: 0, opacity: 1, autoAlpha: 1, duration: 1, ease: "power3.out",
+      scrollTrigger: { trigger: elem, start: "top 85%" }
+    }
+  );
+});
+
+// Stagger Reveal
+gsap.utils.toArray('.reveal-stagger').forEach(elem => {
+  gsap.fromTo(elem.children, 
+    { y: 50, opacity: 0, autoAlpha: 0 },
+    {
+      y: 0, opacity: 1, autoAlpha: 1, duration: 0.8, stagger: 0.15, ease: "power2.out",
+      scrollTrigger: { trigger: elem, start: "top 80%" }
+    }
+  );
+});
+// ═════════════════════════════════════════════════════
+// FILTROS DE AUTOMAÇÕES
+// ═════════════════════════════════════════════════════
+document.querySelectorAll('.aut-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const filter = tab.dataset.filter;
+    document.querySelectorAll('.aut-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.aut-card').forEach(card => {
+      const show = filter === 'todos' || card.dataset.frente === filter;
+      card.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+// ═════════════════════════════════════════════════════
+// FORM MULTI-STEP → BACKEND CRM
+// ═════════════════════════════════════════════════════
+const PRAJA_API_URL = (location.protocol === 'http:' || location.protocol === 'https:')
+  ? location.origin
+  : 'http://localhost:7272';
+
+// Estado do form
+const formState = {
+  step: 1,
+  tamanho: '',
+  tem_erp: '',
+  areas: new Set(),
+  automacoes: new Set(),
+};
+
+// Catálogo carregado do backend
+let _catalogoPraja = null;
+
+// Emojis por categoria visual (espelha as categorias do CRM)
+const CATEGORIA_EMOJI = {
+  dashboard: '📊',
+  chat:      '💬',
+  tabela:    '📋',
+  pix:       '💸',
+  nf:        '📄',
+  landing:   '🌐',
+  ads:       '📈',
+  pipeline:  '🔄',
+  relatorio: '📑',
+  agenda:    '📅',
+};
+
+// ─── Navegação entre passos ───
+function proxStep(atual) {
+  if (!validarStep(atual)) return;
+  irParaStep(atual + 1);
+  if (atual + 1 === 3) carregarAutomacoes();
+}
+
+function voltarStep(atual) {
+  irParaStep(atual - 1);
+}
+
+function irParaStep(n) {
+  formState.step = n;
+  document.querySelectorAll('.form-step').forEach(s => {
+    s.classList.toggle('active', +s.dataset.step === n);
+  });
+  document.querySelectorAll('.form-progress-step').forEach(p => {
+    const sn = +p.dataset.step;
+    p.classList.remove('active', 'done');
+    if (sn < n) p.classList.add('done');
+    else if (sn === n) p.classList.add('active');
+  });
+}
+
+function validarStep(n) {
+  if (n === 1) {
+    const nomeEl = document.getElementById('nome');
+    const empresaEl = document.getElementById('empresa');
+    const contatoEl = document.getElementById('form-contato');
+    if (!nomeEl || !empresaEl || !contatoEl) {
+      console.error('[Praja] Inputs do form não encontrados', {nomeEl, empresaEl, contatoEl});
+      alert('Erro interno do form. Recarregue a página (Ctrl+Shift+R).');
+      return false;
+    }
+    const nome = nomeEl.value.trim();
+    const empresa = empresaEl.value.trim();
+    const contato = contatoEl.value.trim();
+    if (!nome || !empresa || !contato) {
+      alert('Preenche nome, empresa e contato pra continuar.');
+      return false;
+    }
+    return true;
+  }
+  if (n === 2) {
+    if (formState.areas.size === 0) {
+      alert('Marca pelo menos uma frente que te incomoda — assim mostramos automações relevantes.');
+      return false;
+    }
+    return true;
+  }
+  return true;
+}
+
+// ─── Seleção de cards (radio + multi) ───
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('.opt-card');
+  if (!card) return;
+  const name = card.dataset.name;
+  const value = card.dataset.value;
+  const isMulti = card.classList.contains('multi');
+
+  if (isMulti) {
+    // Multi-select (áreas)
+    if (formState.areas.has(value)) {
+      formState.areas.delete(value);
+      card.classList.remove('selected');
+    } else {
+      formState.areas.add(value);
+      card.classList.add('selected');
+    }
+  } else {
+    // Radio (tamanho, tem_erp)
+    formState[name] = value;
+    document.querySelectorAll(`.opt-card[data-name="${name}"]`).forEach(c => {
+      c.classList.toggle('selected', c.dataset.value === value);
+    });
+  }
+});
+
+// ─── Carrega catálogo do backend, filtra por áreas marcadas ───
+async function carregarAutomacoes() {
+  const grid = document.getElementById('autPickGrid');
+  if (!_catalogoPraja) {
+    try {
+      const r = await fetch(PRAJA_API_URL + '/api/site/catalogo');
+      _catalogoPraja = await r.json();
+    } catch (e) {
+      grid.innerHTML = '<div class="aut-empty">Não foi possível carregar o catálogo agora. Você ainda pode descrever no campo abaixo o que precisa.</div>';
+      return;
+    }
+  }
+
+  const areasMarcadas = Array.from(formState.areas);
+  const setor = document.getElementById('setor').value;
+  const itens = _catalogoPraja.automacoes.filter(a => {
+    if (!areasMarcadas.includes(a.area)) return false;
+    // Filtra por setor (se selecionado, mostra "todos" + setor)
+    if (setor) {
+      const alvos = a.setores_alvo || ['todos'];
+      if (!alvos.includes('todos') && !alvos.includes(setor)) return false;
+    }
+    return true;
+  });
+
+  if (itens.length === 0) {
+    grid.innerHTML = '<div class="aut-empty">Sem automações para essa combinação. Conta no campo abaixo o que vocês precisam.</div>';
+    atualizarResumo();
+    return;
+  }
+
+  // Agrupa por área pra organizar visualmente
+  const areas = _catalogoPraja.areas;
+  grid.innerHTML = itens.map(a => {
+    const cor = areas[a.area].cor;
+    const sel = formState.automacoes.has(a.id);
+    const emoji = CATEGORIA_EMOJI[a.categoria_visual] || '⚙️';
+    return `
+      <div class="aut-pick ${sel ? 'selected' : ''}" data-aut-id="${a.id}" style="--cor-area:${cor};" onclick="toggleAut('${a.id}')">
+        <div class="aut-pick-emoji">${emoji}</div>
+        <div class="aut-pick-body">
+          <div class="aut-pick-nome">${a.nome}</div>
+          <div class="aut-pick-desc">${a.desc}</div>
+          <div class="aut-pick-area">${areas[a.area].nome}</div>
+        </div>
+      </div>`;
+  }).join('');
+  atualizarResumo();
+}
+
+function toggleAut(id) {
+  const card = document.querySelector(`.aut-pick[data-aut-id="${id}"]`);
+  if (!card) return;
+  if (formState.automacoes.has(id)) {
+    formState.automacoes.delete(id);
+    card.classList.remove('selected');
+  } else {
+    formState.automacoes.add(id);
+    card.classList.add('selected');
+  }
+  atualizarResumo();
+}
+
+function atualizarResumo() {
+  const box = document.getElementById('stepResumo');
+  const text = document.getElementById('stepResumoText');
+  const n = formState.automacoes.size;
+  if (n === 0) {
+    box.style.display = 'none';
+    return;
+  }
+  const areas = Array.from(formState.areas);
+  const nomes = {cibele:'Financeiro', erica:'UX/CS/Tráfego', michele:'Fiscal/Estoque/Compras'};
+  const areasTxt = areas.map(a => nomes[a]).join(' · ');
+  text.innerHTML = `<strong>${n} ${n===1?'oportunidade selecionada':'oportunidades selecionadas'}</strong> em ${areasTxt}. Boa base pra começar a conversa.`;
+  box.style.display = 'block';
+}
+
+// ─── Expõe explicitamente no window pra garantir que onclick inline encontre ──
+window.proxStep = proxStep;
+window.voltarStep = voltarStep;
+window.irParaStep = irParaStep;
+window.validarStep = validarStep;
+window.toggleAut = toggleAut;
+window.atualizarResumo = atualizarResumo;
+window.carregarAutomacoes = carregarAutomacoes;
+window.enviarContato = enviarContato;
+
+// ─── Listeners defensivos múltiplos pro botão de envio ──────────────
+// 1. addEventListener('submit') no form
+// 2. addEventListener('click') direto no botão (fallback se form submit falhar)
+function _registrarListenersForm(){
+  const form = document.getElementById('formContato');
+  const btn  = document.getElementById('formSubmitBtn');
+  if (!form) { console.warn('[Praja] Form #formContato não encontrado'); return; }
+  if (!btn)  { console.warn('[Praja] Botão #formSubmitBtn não encontrado'); return; }
+  console.log('[Praja] Form e botão detectados, registrando listeners');
+
+  // Remove onsubmit inline pra evitar dupla chamada
+  form.removeAttribute('onsubmit');
+
+  // Listener 1: submit do form (jeito padrão)
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    console.log('[Praja] Submit do form disparado');
+    enviarContato(e);
+  });
+
+  // Listener 2: click direto no botão (defensivo)
+  btn.addEventListener('click', (e) => {
+    console.log('[Praja] Click direto no botão #formSubmitBtn');
+    // Se o form submit não disparar (algum bug), garante que enviarContato roda
+    // Pequeno delay pra deixar o submit acontecer naturalmente primeiro
+    setTimeout(() => {
+      if (!btn.disabled && !window._enviandoContato) {
+        console.log('[Praja] Form submit não disparou — forçando envio via click handler');
+        e.preventDefault();
+        enviarContato(e);
+      }
+    }, 50);
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _registrarListenersForm);
+} else {
+  _registrarListenersForm();
+}
+
+async function enviarContato(e){
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  if (window._enviandoContato) {
+    console.log('[Praja] Envio já em andamento, ignorando duplicata');
+    return;
+  }
+  window._enviandoContato = true;
+  console.log('[Praja] enviarContato() iniciado');
+
+  const f  = document.getElementById('formContato');
+  const fb = document.getElementById('formFeedback');
+  const btn = document.getElementById('formSubmitBtn') || f.querySelector('.form-submit');
+  const btnOriginal = btn.textContent;
+
+  // Loading state
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+  btn.textContent = 'Enviando...';
+  fb.style.display = 'none';
+
+  const payload = {
+    nome:    document.getElementById('nome')?.value.trim() || '',
+    empresa: document.getElementById('empresa')?.value.trim() || '',
+    cidade:  document.getElementById('cidade')?.value.trim() || '',
+    contato: document.getElementById('form-contato')?.value.trim() || '',
+    dor:     document.getElementById('dor')?.value.trim() || '',
+    setor:   document.getElementById('setor')?.value || '',
+    tamanho: formState.tamanho,
+    tem_erp: formState.tem_erp,
+    areas_selecionadas:       Array.from(formState.areas),
+    automacoes_selecionadas:  Array.from(formState.automacoes),
+    origem:  'site_prajaconecta',
+  };
+
+  // Timeout pra não pendurar o botão eternamente (8s)
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(() => ctrl.abort('timeout'), 8000);
+
+  try {
+    console.log('[Praja] Enviando pro backend:', PRAJA_API_URL + '/api/lead/captacao_site');
+    const r = await fetch(PRAJA_API_URL + '/api/lead/captacao_site', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+      signal: ctrl.signal,
+      mode: 'cors',
+    });
+    clearTimeout(timeoutId);
+    const data = await r.json();
+    if (!r.ok || data.erro) throw new Error(data.erro || 'Erro ao enviar');
+
+    console.log('[Praja] Lead salva:', data.id_site);
+    fb.textContent = '✓ ' + (data.mensagem || 'Recebido! Responderemos em até 1 dia útil.');
+    fb.style.background = 'rgba(95,217,176,0.1)';
+    fb.style.borderColor = 'rgba(95,217,176,0.3)';
+    fb.style.color = 'var(--mint)';
+    fb.style.display = 'block';
+    f.reset();
+    // Reset estado multi-step
+    formState.tamanho = '';
+    formState.tem_erp = '';
+    formState.areas.clear();
+    formState.automacoes.clear();
+    document.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+    irParaStep(1);
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.warn('[Praja] Backend indisponível, usando fallback mailto:', err.message || err);
+    const subject = encodeURIComponent('Contato pelo site · ' + (payload.empresa || 'Lead'));
+    const corpo = encodeURIComponent(
+      `Nome: ${payload.nome}\n` +
+      `Empresa: ${payload.empresa}\n` +
+      `Cidade: ${payload.cidade}\n` +
+      `Contato: ${payload.contato}\n\n` +
+      `O que tá incomodando:\n${payload.dor}\n\n` +
+      `— enviado pelo site da Praja`
+    );
+    window.location.href = `mailto:contato@prajaconecta.com.br?subject=${subject}&body=${corpo}`;
+
+    fb.textContent = '✓ Abrimos seu app de e-mail com a mensagem pronta. Conclua o envio por lá.';
+    fb.style.background = 'rgba(255,209,102,0.1)';
+    fb.style.borderColor = 'rgba(255,209,102,0.3)';
+    fb.style.color = 'var(--amber)';
+    fb.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.textContent = btnOriginal;
+    window._enviandoContato = false;
+    console.log('[Praja] enviarContato() finalizado');
+    setTimeout(() => { fb.style.display = 'none'; }, 8000);
+  }
+}
+
+// ═════════════════════════════════════════════════════
+// HEADER SCROLL EFFECT
+// ═════════════════════════════════════════════════════
+const nav = document.querySelector('.nav');
+let lastY = 0;
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (y > 40) {
+    nav.style.background = 'rgba(7, 17, 26, 0.92)';
+    nav.style.borderBottomColor = 'rgba(123,191,255,0.18)';
+  } else {
+    nav.style.background = 'rgba(7, 17, 26, 0.7)';
+    nav.style.borderBottomColor = 'rgba(123,191,255,0.12)';
+  }
+  lastY = y;
+}, { passive: true });
+</script>
+
+</body>
+</html>
